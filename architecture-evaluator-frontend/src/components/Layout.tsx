@@ -14,7 +14,7 @@ export default function Layout({ children, noContainer }: LayoutProps) {
             {noContainer ? (
                 <main className="flex-1">{children}</main>
             ) : (
-                <main className="container mx-auto px-4 py-8 flex-1">
+                <main className="container max-w-4xl mx-auto px-4 py-8 flex-1">
                     {children}
                 </main>
             )}

@@ -1,41 +1,30 @@
 import { useState } from 'react'
 import UploadForm from './components/UploadForm'
 import GitHubForm from './components/GitHubForm'
+import OptionSelector from './components/OptionSelector'
 
-export default function ProjectLoad() {
+function ProjectLoad() {
     const [activeTab, setActiveTab] = useState<'zip' | 'github'>('zip')
 
     return (
-        <div className="max-w-xl mx-auto bg-white rounded-xl shadow p-8">
-            <h1 className="text-2xl font-bold mb-6 text-center">Subir proyecto</h1>
-
-            <div className="flex border-b mb-6">
-                <button
-                    className={`py-2 px-4 font-medium focus:outline-none transition-colors duration-150 ${
-                        activeTab === 'zip'
-                            ? 'border-b-2 border-blue-500 text-blue-600'
-                            : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                    onClick={() => setActiveTab('zip')}
-                >
-                    Subir ZIP
-                </button>
-                <button
-                    className={`py-2 px-4 font-medium focus:outline-none transition-colors duration-150 ${
-                        activeTab === 'github'
-                            ? 'border-b-2 border-blue-500 text-blue-600'
-                            : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                    onClick={() => setActiveTab('github')}
-                >
-                    GitHub
-                </button>
+        <div className="grid grid-cols-5 grid-rows-5 gap-4 max-w-4xl mx-auto rounded-xl shadow p-8 bg-gray-800">
+            {/* Title */}
+            <div className="col-span-5">
+                <h1 className="text-2xl font-bold mb-6 text-center">Subir proyecto</h1>
             </div>
-
-            <div className="mt-6">
-                {activeTab === 'zip' ? <UploadForm /> : <GitHubForm />}
+            {/* Selector (left section) */}
+            <div className="col-span-2 row-span-4 row-start-2 flex flex-col items-center">
+                <OptionSelector value={activeTab} onChange={setActiveTab} />
+            </div>
+            {/* Form (right section) */}
+            <div className="col-span-2 row-span-4 col-start-4 row-start-2 flex items-start">
+                <div className="w-full h-full">
+                    {activeTab === 'zip' ? <UploadForm /> : <GitHubForm />}
+                </div>
             </div>
         </div>
     )
 }
+
+export default ProjectLoad
 
