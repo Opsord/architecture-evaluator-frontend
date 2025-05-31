@@ -1,2 +1,43 @@
 @import "tailwindcss";
-@tailwind utilities;
+
+@theme {
+  /* Primary */
+  --color-primary: #20a8ac; /* swamp-500 */
+  --color-primary-dark: #17848a; /* swamp-600 */
+
+  /* Background */
+  --color-background-dark: #17474a; /* swamp-900 */
+  --color-background-light: #f1fcfb; /* swamp-50 */
+
+  /* Gray */
+  --color-gray-light: #cff8f5; /* swamp-100 */
+  --color-gray-medium: #68e0de; /* swamp-300 */
+  --color-gray-dark: #175358; /* swamp-800 */
+  --color-gray-border: #a0efeb; /* swamp-200 */
+
+  /* Swamp */
+  --color-swamp-50: #f1fcfb;
+  --color-swamp-100: #cff8f5;
+  --color-swamp-200: #a0efeb;
+  --color-swamp-300: #68e0de;
+  --color-swamp-400: #39c6c8;
+  --color-swamp-500: #20a8ac;
+  --color-swamp-600: #17848a;
+  --color-swamp-700: #166a6f;
+  --color-swamp-800: #175358;
+  --color-swamp-900: #17474a;
+  --color-swamp-950: #051c1f;
+
+  /* Bright Turquoise */
+  --color-bright-turquoise-50: #F3FEFC;
+  --color-bright-turquoise-100: #B4F9ED;
+  --color-bright-turquoise-200: #76F3DF;
+  --color-bright-turquoise-300: #38EED0;
+  --color-bright-turquoise-400: #06DEBA;
+  --color-bright-turquoise-500: #05C2A3;
+  --color-bright-turquoise-600: #04A68B;
+  --color-bright-turquoise-700: #048A74;
+  --color-bright-turquoise-800: #036E5C;
+  --color-bright-turquoise-900: #025245;
+  --color-bright-turquoise-950: #01362D;
+}
