@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import * as React from "react";
+import { analyzeProjectUpload } from '../../../services/api'
 
 export default function UploadForm() {
     const [file, setFile] = useState<File | null>(null)
@@ -11,10 +12,7 @@ export default function UploadForm() {
 
         setIsUploading(true)
         try {
-            // Aquí iría la llamada a tu backend Spring Boot
-            const formData = new FormData()
-            formData.append('file', file)
-            // await uploadProject(formData)
+            await analyzeProjectUpload(file)
             alert('Proyecto subido con éxito!')
         } catch (error) {
             console.error('Error uploading:', error)

@@ -3,7 +3,7 @@ import React from 'react';
 const Footer: React.FC = () => {
     return (
         <footer className="bg-background-dark rounded-lg shadow-sm m-4">
-            <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8 text-gray-dark dark:text-white rounded-lg cursor-pointer hover:bg-gray-light dark:hover:bg-gray-dark dark:hover:text-white">
+            <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8 text-gray-light rounded-lg cursor-pointer hover:bg-gray-light dark:hover:bg-gray-dark dark:hover:text-white">
                 <div className="sm:flex sm:items-center sm:justify-between">
                     <a href="https://flowbite.com/"
                        className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">

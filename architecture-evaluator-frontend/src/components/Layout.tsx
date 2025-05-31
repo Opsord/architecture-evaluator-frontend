@@ -9,12 +9,12 @@ type LayoutProps = {
 
 export default function Layout({ children, noContainer }: LayoutProps) {
     return (
-        <div className="min-h-screen flex flex-col bg-gray-900">
+        <div className="min-h-screen flex flex-col bg-background-dark">
             <Navbar />
             {noContainer ? (
                 <main className="flex-1">{children}</main>
             ) : (
-                <main className="container max-w-4xl mx-auto px-4 py-8 flex-1">
+                <main className="container max-w-4xl h-5/6 mx-auto px-4 py-8 flex-1">
                     {children}
                 </main>
             )}
@@ -22,3 +22,4 @@ export default function Layout({ children, noContainer }: LayoutProps) {
         </div>
     )
 }
+

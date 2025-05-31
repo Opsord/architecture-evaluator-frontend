@@ -2,7 +2,7 @@
 
 const InfoCard = () => {
   return (
-    <div className="w-[310px] p-6 bg-[#1E293B] border border-[#27344a] rounded-lg space-y-4">
+    <div className="w-[310px] p-6 bg-background-dark border border-gray-border rounded-lg space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-10">
@@ -45,7 +45,7 @@ const InfoCard = () => {
               </g>
             </svg>
           </div>
-          <span className="text-white font-bold text-xl">+</span>
+          <span className="text-gray-light font-bold text-xl">+</span>
           <div className="w-[38px] ml-0.5">
             <svg
               fill="#000000"
@@ -83,7 +83,7 @@ const InfoCard = () => {
           </div>
         </div>
         <div className="flex items-center gap-5">
-          <div className="w-5 fill-slate-400 hover:fill-sky-400 duration-200">
+          <div className="w-5 fill-gray-medium hover:fill-primary duration-200">
             <svg
               xmlnsXlink="http://www.w3.org/1999/xlink"
               xmlns="http://www.w3.org/2000/svg"
@@ -114,7 +114,7 @@ const InfoCard = () => {
               </g>
             </svg>
           </div>
-          <div className="w-5 fill-slate-400 hover:fill-sky-400 duration-200">
+          <div className="w-5 fill-gray-medium hover:fill-primary duration-200">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               role="img"
@@ -133,17 +133,17 @@ const InfoCard = () => {
           </div>
         </div>
       </div>
-      <h1 className="capitalize text-white font-medium text-lg">
+      <h1 className="capitalize text-gray-light font-medium text-lg">
         Make awesome input design using only Tailwindcss.
       </h1>
-      <p className="text-slate-400 text-sm">
+      <p className="text-gray-medium text-sm">
         This web application allows automatic evaluation of the architecture of
         Java applications based on the Spring Boot framework. It provides key
         maintainability-related metrics and offers an interactive visual
         interface to analyze the results without requiring advanced knowledge of
         metric evaluation.
       </p>
-      <div className="flex items-center gap-3 text-[13px] text-zinc-200 font-medium">
+      <div className="flex items-center gap-3 text-[13px] text-gray-light font-medium">
         <span>HTML + Tailwindcss</span>
       </div>
     </div>

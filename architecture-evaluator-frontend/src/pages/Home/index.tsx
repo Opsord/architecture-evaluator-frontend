@@ -7,34 +7,36 @@ function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background-dark text-white">
-      <div className="grid grid-cols-6 grid-rows-5 gap-4 min-h-screen items-center w-full h-full">
+      <div className="grid grid-cols-5 grid-rows-6 gap-4 h-max rounded-xl shadow p-8 bg-background-dark">
         {/* Title */}
-        <div className="col-span-4 col-start-2">
-          <h1 className="text-4xl font-bold text-center text-gray-light dark:text-white">
-            This is a title
+        <div className="col-span-5">
+          <h1 className="text-4xl font-bold text-center text-primary">
+            Architecture Evaluator
           </h1>
-          <p className="text-lg text-gray-medium dark:text-gray-light text-center mt-4">
-            This is a paragraph describing what the app does or how to start.
+          <p className="text-lg text-gray-medium text-center mt-4">
+            Analyze your software architecture with ease and different maintainability metrics.
           </p>
         </div>
         {/* Section 1 (left) */}
-        <div className="col-span-2 row-span-4 col-start-2 row-start-2 flex items-center justify-center">
+        <div className="col-span-2 row-span-4 row-start-3 flex items-center justify-center">
           <InfoCard />
         </div>
         {/* Section 2 (right) */}
-        <div className="col-span-2 row-span-4 col-start-4 row-start-2 flex flex-col gap-6">
-          <Card>
-            <Button onClick={() => alert("Instrucciones pronto")}>
-              Instructions
-            </Button>
-          </Card>
+        <div className="col-span-2 row-span-4 col-start-4 row-start-3 flex flex-col gap-6">
+          <div className="flex items-center justify-center h-1/2">
+            <Card>
+              <Button onClick={() => alert("Instrucciones pronto")}>
+                Instructions
+              </Button>
+            </Card>
+          </div>
+          <div className={ "flex items-center justify-center h-1/2"}>
           <Card>
             <Button onClick={() => navigate("/load")}>Scan project</Button>
           </Card>
+          </div>
         </div>
       </div>
-    </div>
   );
 }
 
