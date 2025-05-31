@@ -16,7 +16,7 @@ export function CardWithLink({
                                  linkText,
                                  className,
                                  children,
-                             }: CardWithLinkProps) {
+                             }: Readonly<CardWithLinkProps>) {
     return (
         <div className={`max-w-sm p-6 bg-background-light border border-gray-border rounded-lg shadow-sm dark:bg-background-dark dark:border-gray-dark ${className ?? ""}`}>
             <a href={link}>
@@ -36,4 +36,3 @@ export function CardWithLink({
         </div>
     );
 }
-
