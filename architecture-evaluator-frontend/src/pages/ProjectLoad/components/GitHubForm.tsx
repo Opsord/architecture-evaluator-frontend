@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import * as React from "react";
+import { analyzeGitHubRepo } from '../../../services/api'
 
 export default function GitHubForm() {
     const [repoUrl, setRepoUrl] = useState('')
@@ -11,8 +12,7 @@ export default function GitHubForm() {
 
         setIsLoading(true)
         try {
-            // Aquí iría la llamada a tu backend
-            // await analyzeGitHubRepo(repoUrl)
+            await analyzeGitHubRepo(repoUrl)
             alert('Repositorio en análisis!')
         } catch (error) {
             console.error('Error:', error)
@@ -26,11 +26,11 @@ export default function GitHubForm() {
         <form onSubmit={handleSubmit} className="space-y-6">
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                    URL del repositorio GitHub
+                    URL of the GitHub repository
                 </label>
                 <input
                     type="url"
-                    placeholder="https://github.com/usuario/repositorio"
+                    placeholder="https://github.com/user/repository"
                     value={repoUrl}
                     onChange={(e) => setRepoUrl(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
@@ -46,7 +46,7 @@ export default function GitHubForm() {
                         : 'bg-blue-600 hover:bg-blue-700'
                 }`}
             >
-                {isLoading ? 'Procesando...' : 'Clonar y analizar'}
+                {isLoading ? 'Processing...' : 'Clone and Analyze'}
             </button>
         </form>
     )

@@ -4,21 +4,25 @@ import Footer from './Footer'
 
 type LayoutProps = {
     children: ReactNode
-    noContainer?: boolean
 }
 
-export default function Layout({ children, noContainer }: LayoutProps) {
+export default function Layout({ children }: LayoutProps) {
     return (
-        <div className="min-h-screen flex flex-col bg-background-dark">
-            <Navbar />
-            {noContainer ? (
-                <main className="flex-1">{children}</main>
-            ) : (
-                <main className="container max-w-4xl h-5/6 mx-auto px-4 py-8 flex-1">
+        <div className="min-h-screen flex flex-col">
+            {/* Navbar section */}
+            <div>
+                <Navbar />
+            </div>
+            {/* Main content section */}
+            <div className="flex turquoise-50">
+                <main className="container max-w-4xl h-5/6 mx-auto py-8">
                     {children}
                 </main>
-            )}
-            <Footer />
+            </div>
+            {/* Footer section */}
+            <div>
+                <Footer />
+            </div>
         </div>
     )
 }

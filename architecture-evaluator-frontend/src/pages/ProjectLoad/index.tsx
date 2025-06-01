@@ -7,7 +7,7 @@ function ProjectLoad() {
     const [activeTab, setActiveTab] = useState<'zip' | 'github'>('zip')
 
     return (
-        <div className="grid grid-cols-5 grid-rows-6 gap-4 h-max rounded-xl shadow p-8 bg-background-dark">
+        <div className="grid grid-cols-5 grid-rows-6 gap-4 h-max rounded-xl shadow p-8">
             {/* Title */}
             <div className="col-span-5">
                 <h1 className="text-4xl font-bold text-center text-primary">
