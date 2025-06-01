@@ -7,7 +7,7 @@ function Home() {
   const navigate = useNavigate();
 
   return (
-      <div className="grid grid-cols-5 grid-rows-6 gap-4 h-max rounded-xl shadow p-8">
+      <div className="grid grid-cols-5 grid-rows-6 gap-4 h-max">
         {/* Title */}
         <div className="col-span-5">
           <h1 className="text-4xl font-bold text-center text-primary">

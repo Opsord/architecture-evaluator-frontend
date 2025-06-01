@@ -9,21 +9,11 @@ type LayoutProps = {
 export default function Layout({ children }: LayoutProps) {
     return (
         <div className="min-h-screen flex flex-col">
-            {/* Navbar section */}
-            <div>
-                <Navbar />
-            </div>
-            {/* Main content section */}
-            <div className="flex turquoise-50">
-                <main className="container max-w-4xl h-5/6 mx-auto py-8">
-                    {children}
-                </main>
-            </div>
-            {/* Footer section */}
-            <div>
-                <Footer />
-            </div>
+            <Navbar />
+            <main className="bg-bright-turquoise-50 flex-1">
+                {children}
+            </main>
+            <Footer />
         </div>
     )
 }
-

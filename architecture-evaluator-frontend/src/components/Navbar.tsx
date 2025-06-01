@@ -2,7 +2,7 @@ import React from "react";
 
 const Navbar: React.FC = () => {
   return (
-    <nav className="bg-mint-500 border-b border-gray-border">
+    <nav className="border-b border-gray-border bg-bright-turquoise-400">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <a
           href="https://flowbite.com/"
@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
             alt="Flowbite Logo"
           />
           <span className="self-center text-2xl font-semibold whitespace-nowrap text-gray-dark dark:text-gray-light">
-            Flowbite
+            ArchEv
           </span>
         </a>
         <div className="flex items-center md:order-2 space-x-1 md:space-x-0 rtl:space-x-reverse">
