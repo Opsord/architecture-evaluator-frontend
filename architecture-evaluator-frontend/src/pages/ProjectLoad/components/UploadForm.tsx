@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import * as React from "react";
+import { useNavigate } from 'react-router-dom'
 import { analyzeProjectUpload } from '../../../services/api'
 
 export default function UploadForm() {
     const [file, setFile] = useState<File | null>(null)
     const [isUploading, setIsUploading] = useState(false)
+    const navigate = useNavigate()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -12,8 +14,10 @@ export default function UploadForm() {
 
         setIsUploading(true)
         try {
-            await analyzeProjectUpload(file)
-            alert('Proyecto subido con éxito!')
+            const response = await analyzeProjectUpload(file)
+            // Save the response data to localStorage
+            localStorage.setItem('dashboardData', JSON.stringify(response))
+            navigate('/dashboard')
         } catch (error) {
             console.error('Error uploading:', error)
             alert('Error al subir el proyecto')
@@ -33,12 +37,12 @@ export default function UploadForm() {
                     accept=".zip"
                     onChange={(e) => setFile(e.target.files?.[0] || null)}
                     className="block w-full text-sm text-gray-500
-            file:mr-4 file:py-2 file:px-4
-            file:rounded-md file:border-0
-            file:text-sm file:font-semibold
-            file:bg-blue-50 file:text-blue-700
-            hover:file:bg-blue-100"
-                />
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-md file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-blue-50 file:text-blue-700
+                                hover:file:bg-blue-100"
+                                    />
             </div>
 
             <button

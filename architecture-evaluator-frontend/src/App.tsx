@@ -3,6 +3,7 @@ import Home from './pages/Home'
 import ProjectLoad from './pages/ProjectLoad'
 import Dashboard from './pages/Dashboard'
 import Layout from './components/Layout'
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 function App() {
     return (
@@ -11,7 +12,9 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/load" element={<ProjectLoad />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/dashboard" element={<ErrorBoundary>
+                        <Dashboard />
+                    </ErrorBoundary>} />
                 </Routes>
             </Layout>
         </Router>

@@ -1,31 +1,27 @@
 import axios from 'axios'
+import type { ProjectAnalysisDTO } from '../types/project-analysis'
 
-// Instancia de axios con configuración base
+// Axios instance with base configuration
 const api = axios.create({
-    baseURL: '/api/orchestrator', // Cambia si tu backend está en otro host/puerto
+    baseURL: '/api/orchestrator',
     headers: {
         'Accept': 'application/json',
     },
 })
 
-// Analizar proyecto por path local
-export const analyzeProject = (projectPath: string, includeNonInternalDependencies = false) =>
-    api.post('/analyze', null, {
-        params: { projectPath, includeNonInternalDependencies }
-    })
-
-// Analizar proyecto subido (archivo ZIP)
-export const analyzeProjectUpload = (file: File, includeNonInternalDependencies = false) => {
+// Analyze uploaded project (ZIP file)
+export const analyzeProjectUpload = (file: File, includeNonInternalDependencies = false): Promise<{data: ProjectAnalysisDTO}> => {
     const formData = new FormData()
     formData.append('project', file)
-    formData.append('includeNonInternalDependencies', String(includeNonInternalDependencies))
+
     return api.post('/analyze-upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
+        params: { includeNonInternalDependencies }
     })
 }
 
-// Analizar repositorio de GitHub
-export const analyzeGitHubRepo = (repoUrl: string, includeNonInternalDependencies = false) =>
+// Analyze GitHub repository
+export const analyzeGitHubRepo = (repoUrl: string, includeNonInternalDependencies = false): Promise<{data: ProjectAnalysisDTO}> =>
     api.post('/analyze-github', null, {
         params: { repoUrl, includeNonInternalDependencies }
     })
