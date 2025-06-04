@@ -1,16 +1,16 @@
 // ProjectAnalysisDTO.ts
 
 // Import previously defined types
-import type { CustomCompilationUnitDTO } from "./compilation-unit.ts";
-import type { AnalysedCompUnitDTO } from "./analysed-comp-unit.ts";
+import type { CompUnitSummaryDTO } from "./compilation-unit.summary.ts";
+import type { AnalysedCompUnitDTO } from "./compilation-unit-analysis.ts";
 import type { PomFileDTO } from "./pom.ts";
 
 // --------------------------------------------------
 // CompUnitWithAnalysisDTO
 // --------------------------------------------------
 export interface CompUnitWithAnalysisDTO {
-    compilationUnit: CustomCompilationUnitDTO;
-    analysis: AnalysedCompUnitDTO;
+    compUnitSummaryDTO: CompUnitSummaryDTO;
+    analysisDTO: AnalysedCompUnitDTO;
 }
 
 // --------------------------------------------------

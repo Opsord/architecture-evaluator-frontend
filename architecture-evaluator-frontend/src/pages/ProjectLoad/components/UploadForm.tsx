@@ -2,11 +2,13 @@ import { useState } from 'react'
 import * as React from "react";
 import { useNavigate } from 'react-router-dom'
 import { analyzeProjectUpload } from '../../../services/api'
+import { useProjectContext } from '../../../context/ProjectContext' // <-- Add this
 
 export default function UploadForm() {
     const [file, setFile] = useState<File | null>(null)
     const [isUploading, setIsUploading] = useState(false)
     const navigate = useNavigate()
+    const { setProjectData } = useProjectContext() // <-- Add this
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -15,8 +17,7 @@ export default function UploadForm() {
         setIsUploading(true)
         try {
             const response = await analyzeProjectUpload(file)
-            // Save the response data to localStorage
-            localStorage.setItem('dashboardData', JSON.stringify(response))
+            setProjectData(response.data) // <-- Set context
             navigate('/dashboard')
         } catch (error) {
             console.error('Error uploading:', error)

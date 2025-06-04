@@ -1,5 +1,4 @@
-//import React from "react";
-import { ComplexityGears } from "./ComplexityGears.tsx";
+import { ComplexityGears } from "./ComplexityGear";
 import { CohesionWires } from "./CohesionWires";
 import { CouplingCables } from "./CouplingCables";
 

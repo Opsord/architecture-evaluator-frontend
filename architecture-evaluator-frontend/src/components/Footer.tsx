@@ -3,7 +3,7 @@ import React from 'react';
 const Footer: React.FC = () => {
     return (
         <footer
-            className="fixed bottom-0 left-0 border-b border-gray-border bg-bright-turquoise-400 w-full shadow-sm md:flex md:items-center md:justify-between md:p-6">
+            className="bottom-0 left-0 border-b border-gray-border bg-bright-turquoise-400 w-full shadow-sm md:flex md:items-center md:justify-between md:p-6">
             <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2023 <a href="https://flowbite.com/"
                                                                                                 className="hover:underline">Flowbite™</a>. All Rights Reserved.
             </span>
