@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import type { CompUnitWithAnalysisDTO } from "../../../../../types/project-analysis.ts";
 import CompUnitSummaryTooltip from "./SummaryTooltip.tsx";
+import ComplexityGear from "./ComplexityGear.tsx";
 
 interface BoxMachineProps {
     unit: CompUnitWithAnalysisDTO;
@@ -9,6 +10,13 @@ interface BoxMachineProps {
 const BoxMachine: React.FC<BoxMachineProps> = ({ unit }) => {
     const [hovered, setHovered] = useState(false);
     const summary = unit.compUnitSummaryDTO;
+
+    // Helper to scale complexity to a radius (min 8, max 16)
+    const getRadius = (complexity: number) => {
+        const minRadius = 8;
+        const maxRadius = 36;
+        return Math.max(minRadius, Math.min(maxRadius, complexity + minRadius));
+    };
 
     return (
         <div
@@ -22,6 +30,15 @@ const BoxMachine: React.FC<BoxMachineProps> = ({ unit }) => {
             <p className="text-sm text-swamp-700">
                 Lines of code: {summary.linesOfCode}
             </p>
+            <div className="flex gap-1">
+                {summary.methods.map((method, idx) => (
+                    <ComplexityGear
+                        key={idx}
+                        radius={getRadius(method.mcCabeComplexity)}
+                        color="#20a8ac"
+                    />
+                ))}
+            </div>
             {hovered && <CompUnitSummaryTooltip summary={summary} />}
         </div>
     );
