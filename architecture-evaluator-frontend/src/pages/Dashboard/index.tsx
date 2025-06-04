@@ -7,7 +7,7 @@ const Dashboard: React.FC = () => {
     const { projectData } = useProjectContext();
 
     if (!projectData) {
-        return <div>No data available. Please analyze a project first.</div>;
+        return <div className="z-0">No data available. Please analyze a project first.</div>;
     }
 
     const { controllers, services, repositories, entities, documents, testClasses, otherClasses } = projectData;

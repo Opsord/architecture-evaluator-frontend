@@ -8,15 +8,18 @@ interface Props {
     documents: CompUnitWithAnalysisDTO[];
 }
 
+const sortByLoc = (arr: CompUnitWithAnalysisDTO[]) =>
+    [...arr].sort((a, b) => b.compUnitSummaryDTO.linesOfCode - a.compUnitSummaryDTO.linesOfCode);
+
 const EntitiesDocumentsSection: React.FC<Props> = ({ entities, documents }) => {
     if (entities.length === 0 && documents.length === 0) return null;
     return (
-        <div className="flex gap-6 mb-8">
+        <div className="flex gap-8 mb-8">
             {entities.length > 0 && (
                 <div className="flex-1 layer-section">
                     <h2>Entities</h2>
-                    <div className="layer-boxes">
-                        {entities.map((unit, idx) => (
+                    <div className="flex flex-wrap gap-6 justify-center">
+                        {sortByLoc(entities).map((unit, idx) => (
                             <BoxMachine key={idx} unit={unit} />
                         ))}
                     </div>
@@ -25,8 +28,8 @@ const EntitiesDocumentsSection: React.FC<Props> = ({ entities, documents }) => {
             {documents.length > 0 && (
                 <div className="flex-1 layer-section">
                     <h2>Documents</h2>
-                    <div className="layer-boxes">
-                        {documents.map((unit, idx) => (
+                    <div className="flex flex-wrap gap-6 justify-center">
+                        {sortByLoc(documents).map((unit, idx) => (
                             <BoxMachine key={idx} unit={unit} />
                         ))}
                     </div>
