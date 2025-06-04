@@ -10,7 +10,7 @@ import type { PomFileDTO } from "./pom.ts";
 // --------------------------------------------------
 export interface CompUnitWithAnalysisDTO {
     compUnitSummaryDTO: CompUnitSummaryDTO;
-    analysisDTO: AnalysedCompUnitDTO;
+    analysis: AnalysedCompUnitDTO;
 }
 
 // --------------------------------------------------
