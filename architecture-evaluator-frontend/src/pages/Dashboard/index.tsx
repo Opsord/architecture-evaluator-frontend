@@ -1,16 +1,7 @@
 import React from "react";
 import { useProjectContext } from "../../context/ProjectContext";
-import BoxMachine from "./components/BoxMachine";
-
-const LAYERS = [
-    { key: "controllers", label: "Controllers" },
-    { key: "services", label: "Services" },
-    { key: "repositories", label: "Repositories" },
-    { key: "entities", label: "Entities" },
-    { key: "documents", label: "Documents" },
-    { key: "testClasses", label: "Test Classes" },
-    { key: "otherClasses", label: "Other Classes" }
-];
+import LayerSection from "./components/LayerSection";
+import EntitiesDocumentsSection from "./components/EntitiesDocumentsSection";
 
 const Dashboard: React.FC = () => {
     const { projectData } = useProjectContext();
@@ -19,22 +10,16 @@ const Dashboard: React.FC = () => {
         return <div>No data available. Please analyze a project first.</div>;
     }
 
+    const { controllers, services, repositories, entities, documents, testClasses, otherClasses } = projectData;
+
     return (
         <div className="dashboard">
-            {LAYERS.map(layer => {
-                const units = (projectData as any)[layer.key] as any[];
-                if (!units || units.length === 0) return null;
-                return (
-                    <div key={layer.key} className="layer-section">
-                        <h2>{layer.label}</h2>
-                        <div className="layer-boxes">
-                            {units.map((unit, idx) => (
-                                <BoxMachine key={idx} unit={unit} />
-                            ))}
-                        </div>
-                    </div>
-                );
-            })}
+            <LayerSection title="Controllers" units={controllers} />
+            <LayerSection title="Services" units={services} />
+            <LayerSection title="Repositories" units={repositories} />
+            <EntitiesDocumentsSection entities={entities} documents={documents} />
+            <LayerSection title="Test Classes" units={testClasses} />
+            <LayerSection title="Other Classes" units={otherClasses} />
         </div>
     );
 };

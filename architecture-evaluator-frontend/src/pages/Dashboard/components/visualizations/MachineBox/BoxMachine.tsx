@@ -1,5 +1,5 @@
 import React from "react";
-import type { CompUnitWithAnalysisDTO } from "../../../types/project-analysis";
+import type { CompUnitWithAnalysisDTO } from "../../../../../types/project-analysis.ts";
 
 interface BoxMachineProps {
     unit: CompUnitWithAnalysisDTO;
