@@ -17,14 +17,14 @@ const LayerSection: React.FC<LayerSectionProps> = ({ title, units }) => {
     );
 
     return (
-        <div className="layer-section mb-8">
-            <h2>{title}</h2>
+        <section className="mb-8 bg-white border border-swamp-200 rounded-xl shadow-md p-6">
+            <h2 className="text-2xl font-bold text-center text-swamp-900 mb-4">{title}</h2>
             <div className="flex flex-wrap gap-6 justify-center">
                 {sortedUnits.map((unit, idx) => (
                     <BoxMachine key={idx} unit={unit} />
                 ))}
             </div>
-        </div>
+        </section>
     );
 };
 

@@ -16,24 +16,24 @@ const EntitiesDocumentsSection: React.FC<Props> = ({ entities, documents }) => {
     return (
         <div className="flex gap-8 mb-8">
             {entities.length > 0 && (
-                <div className="flex-1 layer-section">
-                    <h2>Entities</h2>
+                <section className="flex-1 bg-white border border-swamp-200 rounded-xl shadow-md p-6 mb-0">
+                    <h2 className="text-2xl font-bold text-center text-swamp-900 mb-4">Entities</h2>
                     <div className="flex flex-wrap gap-6 justify-center">
                         {sortByLoc(entities).map((unit, idx) => (
                             <BoxMachine key={idx} unit={unit} />
                         ))}
                     </div>
-                </div>
+                </section>
             )}
             {documents.length > 0 && (
-                <div className="flex-1 layer-section">
-                    <h2>Documents</h2>
+                <section className="flex-1 bg-white border border-swamp-200 rounded-xl shadow-md p-6 mb-0">
+                    <h2 className="text-2xl font-bold text-center text-swamp-900 mb-4">Documents</h2>
                     <div className="flex flex-wrap gap-6 justify-center">
                         {sortByLoc(documents).map((unit, idx) => (
                             <BoxMachine key={idx} unit={unit} />
                         ))}
                     </div>
-                </div>
+                </section>
             )}
         </div>
     );
