@@ -12,6 +12,7 @@ export interface MethodSummaryDTO {
     returnType: string;
     parametersCount: number;
     linesOfCode: number;
+    mcCabeComplexity: number;
 }
 
 // --------------------------------------------------
