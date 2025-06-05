@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Line } from "@react-three/drei";
+import { OrbitControls, Line, Html } from "@react-three/drei";
 import { Vector3 } from "three";
 import Cube from "./Cube";
 import type { ProjectAnalysisDTO, CompUnitWithAnalysisDTO } from "../../../types/project-analysis.ts";
@@ -25,7 +25,10 @@ interface CompUnitsSceneProps {
 }
 
 const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
-    // Build cubes and a map from className to position
+    const [hoveredLine, setHoveredLine] = useState<string | null>(null);
+    const [hoveredCube, setHoveredCube] = useState<string | null>(null);
+    const [selectedCube, setSelectedCube] = useState<string | null>(null);
+
     const { cubes, classPosMap } = useMemo(() => {
         const cubes: CubeInfo[] = [];
         const classPosMap: Record<string, [number, number, number]> = {};
@@ -48,7 +51,7 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
             });
         });
         return { cubes, classPosMap };
-    }, [projectData]);
+    }, [projectData, projectData.documents]);
 
     return (
         <Canvas camera={{ position: [0, 4, 18], fov: 60 }}>
@@ -57,9 +60,12 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
             {/* Render cubes */}
             {cubes.map((cube, idx) => (
                 <Cube
-                    key={cube.className}
+                    key={cube.className + '-' + idx}
                     position={cube.position}
                     label={cube.className}
+                    onPointerOver={() => setHoveredCube(cube.className)}
+                    onPointerOut={() => setHoveredCube(null)}
+                    onClick={() => setSelectedCube(cube.className === selectedCube ? null : cube.className)}
                 />
             ))}
             {/* Render dependency lines */}
@@ -68,22 +74,57 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
                     const depPos = classPosMap[dep];
                     if (!depPos) return null;
 
-                    // Calculate direction vector
+                    const lineKey = `${cube.className}->${dep}`;
                     const from = new Vector3(...cube.position);
                     const to = new Vector3(...depPos);
                     const dir = to.clone().sub(from).normalize().multiplyScalar(0.5);
-
-                    // Offset start and end points
                     const start = from.clone().add(dir);
                     const end = to.clone().add(dir.clone().negate());
+                    const mid = start.clone().lerp(end, 0.5);
+
+                    // Highlight if hovered/selected cube is source or target
+                    const isConnected =
+                        hoveredCube === cube.className ||
+                        hoveredCube === dep ||
+                        selectedCube === cube.className ||
+                        selectedCube === dep;
 
                     return (
-                        <Line
-                            key={`${cube.className}->${dep}`}
-                            points={[start.toArray(), end.toArray()]}
-                            color="#17474a"
-                            lineWidth={1}
-                        />
+                        <group key={lineKey}>
+                            <Line
+                                points={[start.toArray(), end.toArray()]}
+                                color={
+                                    hoveredLine === lineKey
+                                        ? "#20a8ac"
+                                        : isConnected
+                                            ? "#39c6c8"
+                                            : "#17474a"
+                                }
+                                lineWidth={
+                                    hoveredLine === lineKey
+                                        ? 5
+                                        : isConnected
+                                            ? 4
+                                            : 2
+                                }
+                                onPointerOver={() => setHoveredLine(lineKey)}
+                                onPointerOut={() => setHoveredLine(null)}
+                            />
+                            {hoveredLine === lineKey && (
+                                <Html position={mid.toArray()} center>
+                                    <div style={{
+                                        background: "white",
+                                        color: "#17474a",
+                                        padding: "2px 8px",
+                                        borderRadius: "4px",
+                                        fontSize: "0.8rem",
+                                        boxShadow: "0 2px 8px rgba(0,0,0,0.15)"
+                                    }}>
+                                        {cube.className} → {dep}
+                                    </div>
+                                </Html>
+                            )}
+                        </group>
                     );
                 })
             )}

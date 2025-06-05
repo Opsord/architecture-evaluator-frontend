@@ -4,15 +4,25 @@ import { Html } from "@react-three/drei";
 interface CubeProps {
     position: [number, number, number];
     label: string;
+    onPointerOver?: () => void;
+    onPointerOut?: () => void;
+    onClick?: () => void;
 }
 
-const Cube: React.FC<CubeProps> = ({ position, label }) => {
+const Cube: React.FC<CubeProps> = ({ position, label, onPointerOver, onPointerOut, onClick }) => {
     const [hovered, setHovered] = useState(false);
     return (
         <mesh
             position={position}
-            onPointerOver={() => setHovered(true)}
-            onPointerOut={() => setHovered(false)}
+            onPointerOver={() => {
+                setHovered(true);
+                onPointerOver?.();
+            }}
+            onPointerOut={() => {
+                setHovered(false);
+                onPointerOut?.();
+            }}
+            onClick={onClick}
         >
             <boxGeometry args={[1, 1, 1]} />
             <meshStandardMaterial color={hovered ? "#20a8ac" : "#68e0de"} />
