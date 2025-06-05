@@ -22,7 +22,7 @@ const CompUnitSummaryTooltip: React.FC<Props> = ({ summary }) => (
             )}
             {summary.dependentClasses?.length > 0 && (
                 <li>
-                    <span className="font-medium">Dependent Classes:</span> {summary.dependentClasses.join(", ")}
+                    <span className="font-medium">Dependent Classes:</span> {(summary.dependentClasses || []).filter(Boolean).join(", ")}
                 </li>
             )}
             {summary.annotationDTOS?.length > 0 && (
