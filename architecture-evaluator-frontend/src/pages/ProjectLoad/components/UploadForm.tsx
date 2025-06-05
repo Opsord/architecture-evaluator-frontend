@@ -2,13 +2,13 @@ import { useState } from 'react'
 import * as React from "react";
 import { useNavigate } from 'react-router-dom'
 import { analyzeProjectUpload } from '../../../services/api'
-import { useProjectContext } from '../../../context/ProjectContext' // <-- Add this
+import { useProjectContext } from '../../../context/ProjectContext'
 
 export default function UploadForm() {
     const [file, setFile] = useState<File | null>(null)
     const [isUploading, setIsUploading] = useState(false)
     const navigate = useNavigate()
-    const { setProjectData } = useProjectContext() // <-- Add this
+    const { setProjectData } = useProjectContext()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -17,7 +17,7 @@ export default function UploadForm() {
         setIsUploading(true)
         try {
             const response = await analyzeProjectUpload(file)
-            setProjectData(response.data) // <-- Set context
+            setProjectData(response.data)
             navigate('/dashboard')
         } catch (error) {
             console.error('Error uploading:', error)
@@ -28,34 +28,33 @@ export default function UploadForm() {
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Archivo ZIP del proyecto
+                <label className="block text-lg font-semibold text-primary mb-2">
+                    Project ZIP file
                 </label>
                 <input
                     type="file"
                     accept=".zip"
                     onChange={(e) => setFile(e.target.files?.[0] || null)}
-                    className="block w-full text-sm text-gray-500
-                                file:mr-4 file:py-2 file:px-4
-                                file:rounded-md file:border-0
-                                file:text-sm file:font-semibold
-                                file:bg-blue-50 file:text-blue-700
-                                hover:file:bg-blue-100"
-                                    />
+                    className="block w-full text-base text-gray-700
+                        file:mr-4 file:py-3 file:px-6
+                        file:rounded-lg file:border-0
+                        file:text-base file:font-semibold
+                        file:bg-bright-turquoise-100 file:text-primary
+                        hover:file:bg-bright-turquoise-200"
+                />
             </div>
-
             <button
                 type="submit"
                 disabled={!file || isUploading}
-                className={`px-4 py-2 rounded-md text-white ${
+                className={`w-full py-4 text-xl rounded-lg font-bold transition text-white ${
                     !file || isUploading
                         ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-blue-600 hover:bg-blue-700'
+                        : 'bg-gradient-to-r from-primary to-bright-turquoise-400 hover:scale-105 hover:shadow-xl'
                 }`}
             >
-                {isUploading ? 'Subiendo...' : 'Analizar proyecto'}
+                {isUploading ? 'Uploading...' : 'Analyze project'}
             </button>
         </form>
     )
