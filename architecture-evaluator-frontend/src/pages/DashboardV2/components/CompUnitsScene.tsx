@@ -5,6 +5,48 @@ import DependencyLine from "./DependencyLine";
 import Cube from "./Cube";
 import type { ProjectAnalysisDTO, CompUnitWithAnalysisDTO } from "../../../types/project-analysis.ts";
 
+function centerLargest(units: CompUnitWithAnalysisDTO[]) {
+    const sorted = [...units].sort(
+        (a, b) => b.compUnitSummaryDTO.linesOfCode - a.compUnitSummaryDTO.linesOfCode
+    );
+    const result: CompUnitWithAnalysisDTO[] = [];
+    let left: CompUnitWithAnalysisDTO[] = [];
+    let right: CompUnitWithAnalysisDTO[] = [];
+    sorted.forEach((unit, idx) => {
+        if (idx === 0) {
+            result.push(unit); // center
+        } else if (idx % 2 === 1) {
+            right.push(unit);
+        } else {
+            left.unshift(unit);
+        }
+    });
+    return [...left, ...result, ...right];
+}
+
+function centerLargestV2(units: CompUnitWithAnalysisDTO[]) {
+    if (units.length === 0) return [];
+
+    // Sort in descending order by lines of code
+    units.sort((a, b) => b.compUnitSummaryDTO.linesOfCode - a.compUnitSummaryDTO.linesOfCode);
+
+    const result: CompUnitWithAnalysisDTO[] = new Array(units.length);
+    let leftIdx = Math.floor(units.length / 2) - 1; // Start filling left from the middle
+    let rightIdx = Math.floor(units.length / 2) + 1; // Start filling right from the middle
+
+    result[Math.floor(units.length / 2)] = units[0]; // Place the largest in the center
+
+    for (let i = 1; i < units.length; i++) {
+        if (i % 2 === 1) {
+            result[rightIdx++] = units[i]; // Place on the right
+        } else {
+            result[leftIdx--] = units[i]; // Place on the left
+        }
+    }
+
+    return result;
+}
+
 const categories = [
     { key: "controllers", label: "Controllers" },
     { key: "services", label: "Services" },
@@ -43,8 +85,9 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
                 // @ts-ignore
                 units = projectData[cat.key] || [];
             }
-            units.forEach((unit, colIdx) => {
-                const pos: [number, number, number] = [colIdx * 2 - units.length, -rowIdx * 2, 0];
+            const sortedUnits = centerLargestV2(units);
+            sortedUnits.forEach((unit, colIdx) => {
+                const pos: [number, number, number] = [colIdx * 2 - sortedUnits.length, -rowIdx * 2, 0];
                 const className = unit.compUnitSummaryDTO.className;
                 cubes.push({ className, position: pos, unit });
                 classPosMap[className] = pos;
