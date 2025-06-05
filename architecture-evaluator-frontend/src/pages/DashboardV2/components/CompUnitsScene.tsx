@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Line, Html } from "@react-three/drei";
+import { Line, Html } from "@react-three/drei";
 import { Vector3 } from "three";
+import CameraControls from "./CameraControls";
 import Cube from "./Cube";
 import type { ProjectAnalysisDTO, CompUnitWithAnalysisDTO } from "../../../types/project-analysis.ts";
 
@@ -128,14 +129,7 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
                     );
                 })
             )}
-            <OrbitControls
-                enableRotate={true}
-                enablePan={true}
-                enableZoom={true}
-                maxPolarAngle={Math.PI / 2}
-                minPolarAngle={Math.PI / 2}
-                screenSpacePanning={true}
-            />
+            <CameraControls />
         </Canvas>
     );
 };
