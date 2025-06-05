@@ -112,32 +112,65 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
                 />
             ))}
             {/* Render dependency lines */}
-            {cubes.map((cube) =>
-                (cube.unit.compUnitSummaryDTO.dependentClasses || []).map((dep) => {
-                    const depPos = classPosMap[dep];
-                    if (!depPos) return null;
+            {cubes.map((cube, idx) => {
+                // Determine connection state for highlighting
+                let isSelected = selectedCube === cube.className;
+                let isConnected = false;
+                let dimmed = false;
 
-                    const lineKey = `${cube.className}->${dep}`;
-                    const isConnected =
-                        hoveredCube === cube.className ||
-                        hoveredCube === dep ||
-                        selectedCube === cube.className ||
-                        selectedCube === dep;
+                if (selectedCube) {
+                    const selectedUnit = cubes.find(c => c.className === selectedCube)?.unit;
+                    const selectedDeps = selectedUnit?.compUnitSummaryDTO.dependentClasses || [];
+                    const selectedDependents = cubes
+                        .filter(c => c.unit.compUnitSummaryDTO.dependentClasses?.includes(selectedCube))
+                        .map(c => c.className);
 
-                    return (
+                    isConnected =
+                        selectedDeps.includes(cube.className) ||
+                        selectedDependents.includes(cube.className);
+
+                    dimmed = !isSelected && !isConnected;
+                }
+
+                return (
+                    <Cube
+                        key={cube.className + '-' + idx}
+                        position={cube.position}
+                        label={cube.className}
+                        onPointerOver={() => setHoveredCube(cube.className)}
+                        onPointerOut={() => setHoveredCube(null)}
+                        onClick={() => setSelectedCube(cube.className === selectedCube ? null : cube.className)}
+                        isSelected={isSelected}
+                        isConnected={isConnected}
+                        dimmed={dimmed}
+                    />
+                );
+            })}
+
+            {/* Render dependency lines */}
+            {cubes.flatMap((cube) => {
+                const from = cube.position;
+                const source = cube.className;
+                const deps = cube.unit.compUnitSummaryDTO.dependentClasses || [];
+                return deps
+                    .filter(target => classPosMap[target]) // Only draw if target exists
+                    .map(target => (
                         <DependencyLine
-                            key={lineKey}
-                            from={cube.position}
-                            to={depPos}
-                            source={cube.className}
-                            target={dep}
+                            key={source + '->' + target}
+                            from={from}
+                            to={classPosMap[target]}
+                            source={source}
+                            target={target}
                             hoveredLine={hoveredLine}
-                            isConnected={isConnected}
+                            isConnected={
+                                selectedCube
+                                    ? selectedCube === source || selectedCube === target
+                                    : false
+                            }
                             setHoveredLine={setHoveredLine}
                         />
-                    );
-                })
-            )}
+                    ));
+            })}
             <CameraControls />
         </Canvas>
     );
