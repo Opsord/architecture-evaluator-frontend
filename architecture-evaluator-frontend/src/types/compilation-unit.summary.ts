@@ -7,10 +7,9 @@ import type { AnnotationDTO } from './compilation-unit.ts';
 // Method Summary DTO
 // --------------------------------------------------
 export interface MethodSummaryDTO {
-    name: string;
-    accessModifier: string;
+    methodName: string;
+    usedVariables: string[];
     returnType: string;
-    parametersCount: number;
     linesOfCode: number;
     mcCabeComplexity: number;
 }
@@ -23,4 +22,5 @@ export interface CompUnitSummaryDTO {
     methods: MethodSummaryDTO[];
     linesOfCode: number;
     annotationDTOS: AnnotationDTO[];
+    dependentClasses: string[];
 }

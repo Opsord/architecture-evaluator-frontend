@@ -2,7 +2,7 @@
 
 // Import previously defined types
 import type { CompUnitSummaryDTO } from "./compilation-unit.summary.ts";
-import type { AnalysedCompUnitDTO } from "./compilation-unit-analysis.ts";
+import type { AnalysedCompUnitDTO } from "./compilation-unit.analysis.ts";
 import type { PomFileDTO } from "./pom.ts";
 
 // --------------------------------------------------
