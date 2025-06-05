@@ -1,6 +1,6 @@
 import React from "react";
 import { Line, Html } from "@react-three/drei";
-import { Vector3 } from "three";
+import { Vector3, CatmullRomCurve3 } from "three";
 
 interface DependencyLineProps {
     from: [number, number, number];
@@ -24,15 +24,23 @@ const DependencyLine: React.FC<DependencyLineProps> = ({
     const lineKey = `${source}->${target}`;
     const fromVec = new Vector3(...from);
     const toVec = new Vector3(...to);
-    const dir = toVec.clone().sub(fromVec).normalize().multiplyScalar(0.5);
-    const start = fromVec.clone().add(dir);
-    const end = toVec.clone().add(dir.clone().negate());
-    const mid = start.clone().lerp(end, 0.5);
+
+    // Calculate sag depth based on distance
+    const distance = fromVec.distanceTo(toVec);
+    const sag = Math.max(0.5, distance * 0.15);
+
+    // Create two sagging control points
+    const control1 = fromVec.clone().lerp(toVec, 0.33).add(new Vector3(0, -sag, 1));
+    const control2 = fromVec.clone().lerp(toVec, 0.66).add(new Vector3(0, -sag, 1));
+
+    // Create a CatmullRomCurve3 with sagging control points
+    const curve = new CatmullRomCurve3([fromVec, control1, control2, toVec]);
+    const curvePoints = curve.getPoints(32);
 
     return (
         <group key={lineKey}>
             <Line
-                points={[start.toArray(), end.toArray()]}
+                points={curvePoints.map((v) => v.toArray())}
                 color={
                     hoveredLine === lineKey
                         ? "#20a8ac"
@@ -47,11 +55,17 @@ const DependencyLine: React.FC<DependencyLineProps> = ({
                             ? 4
                             : 2
                 }
+                transparent={true}
+                opacity={
+                    hoveredLine === lineKey || isConnected
+                        ? 1
+                        : 0.15
+                }
                 onPointerOver={() => setHoveredLine(lineKey)}
                 onPointerOut={() => setHoveredLine(null)}
             />
             {hoveredLine === lineKey && (
-                <Html position={mid.toArray()} center>
+                <Html position={control1.toArray()} center>
                     <div style={{
                         background: "white",
                         color: "#17474a",
@@ -60,7 +74,7 @@ const DependencyLine: React.FC<DependencyLineProps> = ({
                         fontSize: "0.8rem",
                         boxShadow: "0 2px 8px rgba(0,0,0,0.15)"
                     }}>
-                        {source} → {target}
+                        {`Class "${source}" depends on "${target}"`}
                     </div>
                 </Html>
             )}
