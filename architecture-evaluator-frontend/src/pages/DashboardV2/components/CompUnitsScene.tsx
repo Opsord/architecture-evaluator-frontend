@@ -1,8 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Line, Html } from "@react-three/drei";
-import { Vector3 } from "three";
 import CameraControls from "./CameraControls";
+import DependencyLine from "./DependencyLine";
 import Cube from "./Cube";
 import type { ProjectAnalysisDTO, CompUnitWithAnalysisDTO } from "../../../types/project-analysis.ts";
 
@@ -76,14 +75,6 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
                     if (!depPos) return null;
 
                     const lineKey = `${cube.className}->${dep}`;
-                    const from = new Vector3(...cube.position);
-                    const to = new Vector3(...depPos);
-                    const dir = to.clone().sub(from).normalize().multiplyScalar(0.5);
-                    const start = from.clone().add(dir);
-                    const end = to.clone().add(dir.clone().negate());
-                    const mid = start.clone().lerp(end, 0.5);
-
-                    // Highlight if hovered/selected cube is source or target
                     const isConnected =
                         hoveredCube === cube.className ||
                         hoveredCube === dep ||
@@ -91,41 +82,16 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
                         selectedCube === dep;
 
                     return (
-                        <group key={lineKey}>
-                            <Line
-                                points={[start.toArray(), end.toArray()]}
-                                color={
-                                    hoveredLine === lineKey
-                                        ? "#20a8ac"
-                                        : isConnected
-                                            ? "#39c6c8"
-                                            : "#17474a"
-                                }
-                                lineWidth={
-                                    hoveredLine === lineKey
-                                        ? 5
-                                        : isConnected
-                                            ? 4
-                                            : 2
-                                }
-                                onPointerOver={() => setHoveredLine(lineKey)}
-                                onPointerOut={() => setHoveredLine(null)}
-                            />
-                            {hoveredLine === lineKey && (
-                                <Html position={mid.toArray()} center>
-                                    <div style={{
-                                        background: "white",
-                                        color: "#17474a",
-                                        padding: "2px 8px",
-                                        borderRadius: "4px",
-                                        fontSize: "0.8rem",
-                                        boxShadow: "0 2px 8px rgba(0,0,0,0.15)"
-                                    }}>
-                                        {cube.className} → {dep}
-                                    </div>
-                                </Html>
-                            )}
-                        </group>
+                        <DependencyLine
+                            key={lineKey}
+                            from={cube.position}
+                            to={depPos}
+                            source={cube.className}
+                            target={dep}
+                            hoveredLine={hoveredLine}
+                            isConnected={isConnected}
+                            setHoveredLine={setHoveredLine}
+                        />
                     );
                 })
             )}
