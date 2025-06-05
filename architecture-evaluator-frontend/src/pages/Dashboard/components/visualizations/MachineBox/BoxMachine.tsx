@@ -59,10 +59,11 @@ const BoxMachine: React.FC<BoxMachineProps> = ({ unit }) => {
                 style={{ gap: `${gearGap}px` }}
             >
                 {summary.methods.map((method, idx) => (
-                    <span key={idx} title={method.name}>
+                    <span key={idx}>
                 <ComplexityGear
                     radius={getRadius(method.mcCabeComplexity)}
                     color={getColor(method.mcCabeComplexity)}
+                    methodName={method.methodName || "Unnamed Method"}
                 />
             </span>
                 ))}
