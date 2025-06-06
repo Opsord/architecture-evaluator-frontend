@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { DoubleSide } from "three"; // Add this import
+import { DoubleSide } from "three";
+import { Html } from "@react-three/drei";
 import CameraControls from "./CameraControls";
 import DependencyLine from "./DependencyLine";
 import Cube from "./Cube";
@@ -130,6 +131,19 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
                             depthWrite={false}
                         />
                     </mesh>
+                    <Html position={[box.boxPos[0], box.boxPos[1] + box.boxSize[1] / 2 + 0.7, box.boxPos[2]]} center>
+                        <div style={{
+                            background: "white",
+                            color: "#17474a",
+                            padding: "2px 8px",
+                            borderRadius: "4px",
+                            fontSize: "0.9rem",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+                            opacity: 0.95
+                        }}>
+                            {box.label}
+                        </div>
+                    </Html>
                 </group>
             ))}
 
