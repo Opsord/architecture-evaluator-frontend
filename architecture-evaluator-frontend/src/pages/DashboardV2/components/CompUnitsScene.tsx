@@ -11,9 +11,9 @@ import type { ProjectAnalysisDTO, CompUnitWithAnalysisDTO } from "../../../types
 /* --------------------------------------------------------------------------
  * Constants and Category Definitions
  * ------------------------------------------------------------------------ */
-const gap = 0.5;                // Horizontal gap between cubes
-const minSize = 1;              // Minimum cube size
-const maxSize = 3;              // Maximum cube size
+const GAP = 0.5;                 // Horizontal gap between cubes
+const MIN_SIZE = 1;              // Minimum cube size
+const MAX_SIZE = 3;              // Maximum cube size
 const minCC = 1;                // Minimum cyclomatic complexity
 const maxCC = 20;               // Maximum cyclomatic complexity
 const minBoxWidth = 10;         // Minimum width for a layer box
@@ -41,7 +41,7 @@ const categories = [
  */
 function getCubeSize(unit: CompUnitWithAnalysisDTO): [number, number, number] {
     const cc = unit.analysis.complexityMetrics.approxMcCabeCC ?? minCC;
-    const size = minSize + ((Math.min(cc, maxCC) - minCC) / (maxCC - minCC)) * (maxSize - minSize);
+    const size = MIN_SIZE + ((Math.min(cc, maxCC) - minCC) / (maxCC - minCC)) * (MAX_SIZE - MIN_SIZE);
     return [size, size, size];
 }
 
@@ -120,13 +120,13 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
             const hasUnits = units.length > 0;
             const sizes = centeredUnits.map(getCubeSize);
             const totalCubesWidth = sizes.reduce((sum, s) => sum + s[0], 0);
-            const totalGapsWidth = (centeredUnits.length - 1) * gap;
+            const totalGapsWidth = (centeredUnits.length - 1) * GAP;
             const boxWidth = hasUnits ? Math.max(
-                units.map(getCubeSize).reduce((sum, s) => sum + s[0], 0) + (units.length - 1) * gap,
+                units.map(getCubeSize).reduce((sum, s) => sum + s[0], 0) + (units.length - 1) * GAP,
                 minBoxWidth
             ) : minBoxWidth;
-            Math.max(...sizes.map(s => s[1]), minSize);
-            const boxHeight = hasUnits ? Math.max(...units.map(u => getCubeSize(u)[1]), minSize) + boxVerticalMargin : minSize + boxVerticalMargin;
+            Math.max(...sizes.map(s => s[1]), MIN_SIZE);
+            const boxHeight = hasUnits ? Math.max(...units.map(u => getCubeSize(u)[1]), MIN_SIZE) + boxVerticalMargin : MIN_SIZE + boxVerticalMargin;
 
 
             const z = 0;
@@ -155,7 +155,7 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
                     cubes.push(cubeInfo);
                     rowCubes.push(cubeInfo);
                     classPosMap[unit.compUnitSummaryDTO.className] = [x + size[0] / 2, -y, z];
-                    x += size[0] + gap;
+                    x += size[0] + GAP;
                 });
                 rows.push(rowCubes);
             }
