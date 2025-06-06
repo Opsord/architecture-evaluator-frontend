@@ -117,12 +117,17 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
             }
 
             // Calculate sizes and positions for this row
+            const hasUnits = units.length > 0;
             const sizes = centeredUnits.map(getCubeSize);
             const totalCubesWidth = sizes.reduce((sum, s) => sum + s[0], 0);
             const totalGapsWidth = (centeredUnits.length - 1) * gap;
-            const boxWidth = Math.max(totalCubesWidth + totalGapsWidth, minBoxWidth);
-            const tallestCube = Math.max(...sizes.map(s => s[1]), minSize);
-            const boxHeight = tallestCube + boxVerticalMargin;
+            const boxWidth = hasUnits ? Math.max(
+                units.map(getCubeSize).reduce((sum, s) => sum + s[0], 0) + (units.length - 1) * gap,
+                minBoxWidth
+            ) : minBoxWidth;
+            Math.max(...sizes.map(s => s[1]), minSize);
+            const boxHeight = hasUnits ? Math.max(...units.map(u => getCubeSize(u)[1]), minSize) + boxVerticalMargin : minSize + boxVerticalMargin;
+
 
             const z = 0;
             const boxPos: [number, number, number] = [0, -y, 0];
@@ -134,24 +139,26 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
                 label: cat.label,
             });
 
-            // Compute cube positions in the row
-            let x = -((totalCubesWidth + totalGapsWidth) / 2);
-            const rowCubes: CubeInfo[] = [];
-            centeredUnits.forEach((unit, idx) => {
-                const size = sizes[idx];
-                const cubeInfo = {
-                    className: unit.compUnitSummaryDTO.className,
-                    position: [x + size[0] / 2, -y, z] as [number, number, number],
-                    unit,
-                    rowIdx: visibleRow,
-                    size,
-                };
-                cubes.push(cubeInfo);
-                rowCubes.push(cubeInfo);
-                classPosMap[unit.compUnitSummaryDTO.className] = [x + size[0] / 2, -y, z];
-                x += size[0] + gap;
-            });
-            rows.push(rowCubes);
+            if (hasUnits) {
+                // Compute cube positions in the row
+                let x = -((totalCubesWidth + totalGapsWidth) / 2);
+                const rowCubes: CubeInfo[] = [];
+                centeredUnits.forEach((unit, idx) => {
+                    const size = sizes[idx];
+                    const cubeInfo = {
+                        className: unit.compUnitSummaryDTO.className,
+                        position: [x + size[0] / 2, -y, z] as [number, number, number],
+                        unit,
+                        rowIdx: visibleRow,
+                        size,
+                    };
+                    cubes.push(cubeInfo);
+                    rowCubes.push(cubeInfo);
+                    classPosMap[unit.compUnitSummaryDTO.className] = [x + size[0] / 2, -y, z];
+                    x += size[0] + gap;
+                });
+                rows.push(rowCubes);
+            }
 
             // Move Y down for next row
             y += boxHeight + verticalGap;
