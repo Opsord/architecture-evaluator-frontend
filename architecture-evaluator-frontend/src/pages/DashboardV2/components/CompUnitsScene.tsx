@@ -6,6 +6,7 @@ import LayerBox from "./LayerBox";
 import CubeRow from "./CubeRow";
 import DependencyLinesLayer from "./DependencyLinesLayer";
 import CameraControls from "./CameraControls";
+import AnalysisTooltip from './AnalysisTooltip';
 import type { ProjectAnalysisDTO, CompUnitWithAnalysisDTO } from "../../../types/project-analysis.ts";
 
 /* --------------------------------------------------------------------------
@@ -76,16 +77,6 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
     const [hoveredCube, setHoveredCube] = useState<string | null>(null);
     const [selectedCube, setSelectedCube] = useState<string | null>(null);
 
-    // ---------------- Filter visible categories ----------------
-    const visibleCategories = useMemo(() => {
-        return categories.filter(cat => {
-            if (cat.key === "entities_documents") {
-                return (projectData.entities?.length || 0) + (projectData.documents?.length || 0) > 0;
-            }
-            return (projectData[cat.key]?.length || 0) > 0;
-        });
-    }, [projectData, projectData.documents?.length]);
-
     // ---------------- Layout Calculation ----------------
     /**
      * Precomputes all cube positions, box sizes, and dependency maps.
@@ -93,7 +84,7 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
      * - Each box's height adapts to the tallest cube in its row plus a margin.
      * - Defensive checks ensure no NaN values are passed to geometry.
      */
-    const { cubes, classPosMap, boxes, rows } = useMemo(() => {
+    const { cubes, classPosMap, boxes, rows, selectedCubeInfo } = useMemo(() => {
         const cubes: CubeInfo[] = [];
         const classPosMap: Record<string, [number, number, number]> = {};
         const boxes: { rowIdx: number, boxPos: [number, number, number], boxSize: [number, number, number], label: string }[] = [];
@@ -166,8 +157,9 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
             y += boxHeight + verticalGap;
             visibleRow++;
         });
-        return { cubes, classPosMap, boxes, rows };
-    }, [projectData, projectData.documents]);
+        const selectedCubeInfo = cubes.find(c => c.className === selectedCube);
+        return { cubes, classPosMap, boxes, rows, selectedCubeInfo };
+    }, [projectData, projectData.documents, selectedCube]);
 
     /* ----------------------------------------------------------------------
      * Render 3D Scene
@@ -176,6 +168,12 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
         <Canvas camera={{ position: [0, 0, 20], fov: 60 }}>
             <ambientLight intensity={0.5} />
             <directionalLight position={[5, 10, 7]} intensity={1} />
+            {selectedCubeInfo && (
+                <AnalysisTooltip
+                    position={selectedCubeInfo.position}
+                    analysis={selectedCubeInfo.unit.analysis}
+                />
+            )}
 
             {/* Render translucent boxes for each architectural layer */}
             {boxes.map((box, idx) => {
