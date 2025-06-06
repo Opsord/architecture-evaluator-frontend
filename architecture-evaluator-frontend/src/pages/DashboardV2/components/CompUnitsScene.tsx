@@ -1,10 +1,9 @@
 import React, { useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { DoubleSide } from "three";
-import { Html } from "@react-three/drei";
-import CameraControls from "./CameraControls";
-import DependencyLine from "./DependencyLine";
+import LayerBox from "./LayerBox";
 import Cube from "./Cube";
+import DependencyLine from "./DependencyLine";
+import CameraControls from "./CameraControls";
 import type { ProjectAnalysisDTO, CompUnitWithAnalysisDTO } from "../../../types/project-analysis.ts";
 
 const rowSpacing = 3;
@@ -45,7 +44,7 @@ interface CompUnitsSceneProps {
 
 const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
     const [hoveredLine, setHoveredLine] = useState<string | null>(null);
-    const [setHoveredCube] = useState<string | null>(null);
+    const [hoveredCube, setHoveredCube] = useState<string | null>(null);
     const [selectedCube, setSelectedCube] = useState<string | null>(null);
 
     // Compute which categories have units
@@ -120,31 +119,12 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
 
             {/* Render boxes for each layer */}
             {boxes.map((box, idx) => (
-                <group key={`box-${idx}`}>
-                    <mesh position={box.boxPos} renderOrder={-1}>
-                        <boxGeometry args={box.boxSize} />
-                        <meshStandardMaterial
-                            color="#cff8f5"
-                            transparent={true}
-                            opacity={0.05}
-                            side={DoubleSide}
-                            depthWrite={false}
-                        />
-                    </mesh>
-                    <Html position={[box.boxPos[0], box.boxPos[1] + box.boxSize[1] / 2 + 0.7, box.boxPos[2]]} center>
-                        <div style={{
-                            background: "white",
-                            color: "#17474a",
-                            padding: "2px 8px",
-                            borderRadius: "4px",
-                            fontSize: "0.9rem",
-                            boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-                            opacity: 0.95
-                        }}>
-                            {box.label}
-                        </div>
-                    </Html>
-                </group>
+                <LayerBox
+                    key={`box-${idx}`}
+                    position={box.boxPos}
+                    size={box.boxSize}
+                    label={box.label}
+                />
             ))}
 
             {/* Render cubes */}
