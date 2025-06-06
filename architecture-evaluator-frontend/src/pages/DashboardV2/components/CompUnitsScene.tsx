@@ -6,7 +6,6 @@ import LayerBox from "./LayerBox";
 import CubeRow from "./CubeRow";
 import DependencyLinesLayer from "./DependencyLinesLayer";
 import CameraControls from "./CameraControls";
-import AnalysisTooltip from './AnalysisTooltip';
 import type { ProjectAnalysisDTO, CompUnitWithAnalysisDTO } from "../../../types/project-analysis.ts";
 
 /* --------------------------------------------------------------------------
@@ -60,6 +59,8 @@ interface CubeInfo {
 
 interface CompUnitsSceneProps {
     projectData: ProjectAnalysisDTO;
+    selectedCube: string | null;
+    setSelectedCube: (name: string | null, unit: CompUnitWithAnalysisDTO | null) => void;
 }
 
 /* --------------------------------------------------------------------------
@@ -71,11 +72,10 @@ interface CompUnitsSceneProps {
  * 3D scene for visualizing project architecture.
  * Renders layer boxes, cubes, and dependency lines.
  */
-const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
+const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCube, setSelectedCube }) => {
     // ---------------- State for interaction ----------------
     const [hoveredLine, setHoveredLine] = useState<string | null>(null);
     const [hoveredCube, setHoveredCube] = useState<string | null>(null);
-    const [selectedCube, setSelectedCube] = useState<string | null>(null);
 
     // ---------------- Layout Calculation ----------------
     /**
@@ -168,12 +168,6 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
         <Canvas camera={{ position: [0, 0, 20], fov: 60 }}>
             <ambientLight intensity={0.5} />
             <directionalLight position={[5, 10, 7]} intensity={1} />
-            {selectedCubeInfo && (
-                <AnalysisTooltip
-                    position={selectedCubeInfo.position}
-                    analysis={selectedCubeInfo.unit.analysis}
-                />
-            )}
 
             {/* Render translucent boxes for each architectural layer */}
             {boxes.map((box, idx) => {
@@ -197,7 +191,10 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
                     selectedCube={selectedCube}
                     hoveredCube={hoveredCube}
                     setHoveredCube={setHoveredCube}
-                    setSelectedCube={setSelectedCube}
+                    setSelectedCube={(name) => {
+                        const unit = cubes.find(c => c.className === name)?.unit || null;
+                        setSelectedCube(name === selectedCube ? null : name, name === selectedCube ? null : unit);
+                    }}
                 />
             ))}
 
