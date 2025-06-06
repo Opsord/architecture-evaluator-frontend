@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import LayerBox from "./LayerBox";
-import Cube from "./Cube";
-import DependencyLine from "./DependencyLine";
+import CubeRow from "./CubeRow";
+import DependencyLinesLayer from "./DependencyLinesLayer";
 import CameraControls from "./CameraControls";
 import type { ProjectAnalysisDTO, CompUnitWithAnalysisDTO } from "../../../types/project-analysis.ts";
 
@@ -62,10 +62,11 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
     const verticalOffset = totalHeight / 2;
 
     // Prepare cubes, classPosMap, and box info
-    const { cubes, classPosMap, boxes } = useMemo(() => {
+    const { cubes, classPosMap, boxes, rows } = useMemo(() => {
         const cubes: CubeInfo[] = [];
         const classPosMap: Record<string, [number, number, number]> = {};
         const boxes: { rowIdx: number, boxPos: [number, number, number], boxSize: [number, number, number], label: string }[] = [];
+        const rows: CubeInfo[][] = [];
 
         let visibleRow = 0;
         categories.forEach((cat) => {
@@ -95,21 +96,24 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
                 label: cat.label,
             });
 
+            const rowCubes: CubeInfo[] = [];
             sortedUnits.forEach((unit, colIdx) => {
                 const x = (colIdx - (sortedUnits.length - 1) / 2) * 2;
                 const z = 0;
-                cubes.push({
+                const cubeInfo = {
                     className: unit.compUnitSummaryDTO.className,
-                    position: [x, y, z],
+                    position: [x, y, z] as [number, number, number],
                     unit,
                     rowIdx: visibleRow,
-                });
+                };
+                cubes.push(cubeInfo);
+                rowCubes.push(cubeInfo);
                 classPosMap[unit.compUnitSummaryDTO.className] = [x, y, z];
             });
-
+            rows.push(rowCubes);
             visibleRow++;
         });
-        return { cubes, classPosMap, boxes };
+        return { cubes, classPosMap, boxes, rows };
     }, [projectData, projectData.documents]);
 
     return (
@@ -127,61 +131,27 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData }) => {
                 />
             ))}
 
-            {/* Render cubes */}
-            {cubes.map((cube, idx) => {
-                let isSelected = selectedCube === cube.className;
-                let isConnected = false;
-                let dimmed = false;
-                if (selectedCube) {
-                    const selectedUnit = cubes.find(c => c.className === selectedCube)?.unit;
-                    const selectedDeps = selectedUnit?.compUnitSummaryDTO.dependentClasses || [];
-                    const selectedDependents = cubes
-                        .filter(c => c.unit.compUnitSummaryDTO.dependentClasses?.includes(selectedCube))
-                        .map(c => c.className);
-                    isConnected =
-                        selectedDeps.includes(cube.className) ||
-                        selectedDependents.includes(cube.className);
-                    dimmed = !isSelected && !isConnected;
-                }
-                return (
-                    <Cube
-                        key={cube.className + '-' + idx}
-                        position={cube.position}
-                        label={cube.className}
-                        onPointerOver={() => setHoveredCube(cube.className)}
-                        onPointerOut={() => setHoveredCube(null)}
-                        onClick={() => setSelectedCube(cube.className === selectedCube ? null : cube.className)}
-                        isSelected={isSelected}
-                        isConnected={isConnected}
-                        dimmed={dimmed}
-                    />
-                );
-            })}
+            {/* Render cube rows */}
+            {rows.map((rowCubes, idx) => (
+                <CubeRow
+                    key={`row-${idx}`}
+                    cubes={rowCubes}
+                    selectedCube={selectedCube}
+                    hoveredCube={hoveredCube}
+                    setHoveredCube={setHoveredCube}
+                    setSelectedCube={setSelectedCube}
+                />
+            ))}
 
             {/* Render dependency lines */}
-            {cubes.flatMap((cube) => {
-                const from = cube.position;
-                const source = cube.className;
-                const deps = cube.unit.compUnitSummaryDTO.dependentClasses || [];
-                return deps
-                    .filter(target => classPosMap[target])
-                    .map(target => (
-                        <DependencyLine
-                            key={source + '->' + target}
-                            from={from}
-                            to={classPosMap[target]}
-                            source={source}
-                            target={target}
-                            hoveredLine={hoveredLine}
-                            isConnected={
-                                selectedCube
-                                    ? selectedCube === source || selectedCube === target
-                                    : false
-                            }
-                            setHoveredLine={setHoveredLine}
-                        />
-                    ));
-            })}
+            <DependencyLinesLayer
+                cubes={cubes}
+                classPosMap={classPosMap}
+                hoveredLine={hoveredLine}
+                selectedCube={selectedCube}
+                setHoveredLine={setHoveredLine}
+            />
+
             <CameraControls />
         </Canvas>
     );
