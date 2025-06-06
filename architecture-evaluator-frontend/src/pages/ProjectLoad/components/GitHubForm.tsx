@@ -18,7 +18,7 @@ export default function GitHubForm() {
         try {
             const response = await analyzeGitHubRepo(repoUrl)
             setProjectData(response.data)
-            navigate('/dashboard')
+            navigate('/dashboardV2')
         } catch (error) {
             console.error('Error:', error)
             alert('Error al procesar el repositorio')

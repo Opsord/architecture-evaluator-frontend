@@ -8,6 +8,7 @@ interface CubeRowProps {
         className: string;
         position: [number, number, number];
         unit: CompUnitWithAnalysisDTO;
+        size: [number, number, number];
     }[];
     selectedCube: string | null;
     hoveredCube: string | null;
@@ -18,7 +19,6 @@ interface CubeRowProps {
 const CubeRow: React.FC<CubeRowProps> = ({
                                              cubes,
                                              selectedCube,
-                                             hoveredCube,
                                              setHoveredCube,
                                              setSelectedCube,
                                          }) => {
@@ -43,6 +43,7 @@ const CubeRow: React.FC<CubeRowProps> = ({
                         key={cube.className + '-' + idx}
                         position={cube.position}
                         label={cube.className}
+                        size={cube.size}
                         onPointerOver={() => setHoveredCube(cube.className)}
                         onPointerOut={() => setHoveredCube(null)}
                         onClick={() => setSelectedCube(cube.className === selectedCube ? null : cube.className)}

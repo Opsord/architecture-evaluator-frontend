@@ -12,6 +12,7 @@ const OPACITY_DIMMED = 0.25;
 interface CubeProps {
     position: [number, number, number];
     label: string;
+    size?: [number, number, number];
     onPointerOver?: () => void;
     onPointerOut?: () => void;
     onClick?: () => void;
@@ -23,6 +24,7 @@ interface CubeProps {
 const Cube: React.FC<CubeProps> = ({
                                        position,
                                        label,
+                                        size = [1, 1, 1],
                                        onPointerOver,
                                        onPointerOut,
                                        onClick,
@@ -52,7 +54,7 @@ const Cube: React.FC<CubeProps> = ({
             }}
             onClick={onClick}
         >
-            <boxGeometry args={[1, 1, 1]} />
+            <boxGeometry args={size} />
             <meshStandardMaterial color={color} transparent={true} opacity={opacity} />            {(hovered || isSelected) && (
                 <Html position={[0, 1.2, 0]}>
                     <div style={{

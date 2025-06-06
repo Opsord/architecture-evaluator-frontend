@@ -18,7 +18,7 @@ export default function UploadForm() {
         try {
             const response = await analyzeProjectUpload(file)
             setProjectData(response.data)
-            navigate('/dashboard')
+            navigate('/dashboardV2')
         } catch (error) {
             console.error('Error uploading:', error)
             alert('Error al subir el proyecto')
