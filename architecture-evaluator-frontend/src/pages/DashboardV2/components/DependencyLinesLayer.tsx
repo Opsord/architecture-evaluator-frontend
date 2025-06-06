@@ -26,7 +26,7 @@ const DependencyLinesLayer: React.FC<DependencyLinesLayerProps> = ({
         {cubes.flatMap((cube) => {
             const from = cube.position;
             const source = cube.className;
-            const deps = cube.unit.compUnitSummaryDTO.dependentClasses || [];
+            const deps = cube.unit.compUnitSummaryDTO.dependentClasses ?? [];
             return deps
                 .filter(target => classPosMap[target])
                 .map(target => (

@@ -84,7 +84,7 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
      * - Each box's height adapts to the tallest cube in its row plus a margin.
      * - Defensive checks ensure no NaN values are passed to geometry.
      */
-    const { cubes, classPosMap, boxes, rows, selectedCubeInfo } = useMemo(() => {
+    const { cubes, classPosMap, boxes, rows} = useMemo(() => {
         const cubes: CubeInfo[] = [];
         const classPosMap: Record<string, [number, number, number]> = {};
         const boxes: { rowIdx: number, boxPos: [number, number, number], boxSize: [number, number, number], label: string }[] = [];
@@ -164,9 +164,8 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
             y += boxHeight + verticalGap;
             visibleRow++;
         });
-        const selectedCubeInfo = cubes.find(c => c.className === selectedCube);
-        return { cubes, classPosMap, boxes, rows, selectedCubeInfo };
-    }, [projectData, projectData.documents, selectedCube]);
+        return { cubes, classPosMap, boxes, rows };
+    }, [projectData, projectData.documents]);
 
     /* ----------------------------------------------------------------------
      * Render 3D Scene
