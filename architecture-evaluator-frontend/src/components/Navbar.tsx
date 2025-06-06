@@ -3,7 +3,8 @@ import React from "react";
 const Navbar: React.FC = () => {
   return (
       <nav className="bg-gradient-to-r from-primary via-bright-turquoise-400 to-bright-turquoise-600 shadow-lg">
-        <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+        <div className="max-w-screen-xl mx-auto flex items-center justify-between p-4">
+          {/* Left: Logo and App Name */}
           <a href="/" className="flex items-center gap-3">
             <img
                 src="https://flowbite.com/docs/images/logo.svg"
@@ -14,28 +15,26 @@ const Navbar: React.FC = () => {
             ArchEv
           </span>
           </a>
-          <ul className="flex gap-6 items-center">
+          {/* Center: Navigation Links */}
+          <ul className="flex gap-8 items-center mx-auto">
             <li>
               <a href="/" className="text-white hover:text-gray-200 font-medium transition">
                 Home
               </a>
             </li>
             <li>
-              <a href="#" className="text-white hover:text-gray-200 font-medium transition">
-                About
+              <a href="/load" className="text-white hover:text-gray-200 font-medium transition">
+                Load
               </a>
             </li>
             <li>
-              <a href="#" className="text-white hover:text-gray-200 font-medium transition">
-                Docs
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-white hover:text-gray-200 font-medium transition">
-                Contact
+              <a href="/dashboardV2" className="text-white hover:text-gray-200 font-medium transition">
+                Dashboard
               </a>
             </li>
           </ul>
+          {/* Right: Empty for now */}
+          <div className="w-24" />
         </div>
       </nav>
   );
