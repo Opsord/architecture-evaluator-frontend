@@ -53,8 +53,7 @@ const Cube: React.FC<CubeProps> = ({
             onClick={onClick}
         >
             <boxGeometry args={[1, 1, 1]} />
-            <meshStandardMaterial color={color} transparent opacity={opacity} />
-            {(hovered || isSelected) && (
+            <meshStandardMaterial color={color} transparent={true} opacity={opacity} />            {(hovered || isSelected) && (
                 <Html position={[0, 1.2, 0]}>
                     <div style={{
                         background: "white",
