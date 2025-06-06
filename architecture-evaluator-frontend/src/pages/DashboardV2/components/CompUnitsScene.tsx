@@ -14,8 +14,8 @@ import type { ProjectAnalysisDTO, CompUnitWithAnalysisDTO } from "../../../types
 const GAP = 0.5;                 // Horizontal gap between cubes
 const MIN_SIZE = 1;              // Minimum cube size
 const MAX_SIZE = 3;              // Maximum cube size
-const minCC = 1;                // Minimum cyclomatic complexity
-const maxCC = 20;               // Maximum cyclomatic complexity
+const minLOC = 1;                // Minimum lines of code for scaling
+const maxLOC = 500;              // Maximum lines of code for scaling
 const minBoxWidth = 10;         // Minimum width for a layer box
 const boxDepth = 2;             // Depth of each layer box
 const boxMargin = 1;            // Margin around each box
@@ -36,12 +36,13 @@ const categories = [
  * ------------------------------------------------------------------------ */
 
 /**
- * Computes the cube size based on cyclomatic complexity.
+ * Computes the cube size based on lines of code.
  * Ensures a valid size even if metrics are missing.
  */
 function getCubeSize(unit: CompUnitWithAnalysisDTO): [number, number, number] {
-    const cc = unit.analysis.complexityMetrics.approxMcCabeCC ?? minCC;
-    const size = MIN_SIZE + ((Math.min(cc, maxCC) - minCC) / (maxCC - minCC)) * (MAX_SIZE - MIN_SIZE);
+    const loc = unit.analysis.programMetrics.linesOfCode ?? 1;
+    // Define min/max LOC for scaling
+    const size = MIN_SIZE + ((Math.min(loc, maxLOC) - minLOC) / (maxLOC - minLOC)) * (MAX_SIZE - MIN_SIZE);
     return [size, size, size];
 }
 
