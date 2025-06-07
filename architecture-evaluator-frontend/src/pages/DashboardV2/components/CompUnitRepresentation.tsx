@@ -2,8 +2,11 @@
 
 import React, { useState } from "react";
 import { Html } from "@react-three/drei";
-import { useMemo } from "react";
-import { BoxGeometry } from "three";
+import { useMemo, useRef } from "react";
+import { BoxGeometry, Mesh } from "three";
+import { useFrame } from "@react-three/fiber";
+import type {CompUnitWithAnalysisDTO} from "../../../types/project-analysis.ts";
+
 
 /* --------------------------------------------------------------------------
  * Key Visual Constants
@@ -14,6 +17,7 @@ const COLOR_CONNECTED = "#048A74";
 const COLOR_DIMMED = "#051c1f";
 const OPACITY_DIMMED = 0.25;
 const DEFORMATION_FACTOR = 0.4; // Factor to control deformation intensity
+const VIBRATION_FACTOR = 0.1; // Factor to control vibration amplitude
 
 /* --------------------------------------------------------------------------
  * Functions
@@ -73,13 +77,14 @@ interface CubeProps {
     position: [number, number, number];
     label: string;
     size?: [number, number, number];
-    unit?: any;
+    unit?: CompUnitWithAnalysisDTO;
     onPointerOver?: () => void;
     onPointerOut?: () => void;
     onClick?: () => void;
     isSelected?: boolean;
     isConnected?: boolean;
     dimmed?: boolean;
+    vibrationEnabled?: boolean;
 }
 
 /* --------------------------------------------------------------------------
@@ -96,11 +101,29 @@ const CompUnitRepresentation: React.FC<CubeProps> = ({
                                        isSelected,
                                        isConnected,
                                        dimmed,
+                                        vibrationEnabled = true,
                                    }) => {
     const [hovered, setHovered] = useState(false);
 
     // Get LCOM2 value (default 0)
     const lcom = unit?.analysis?.cohesionMetrics?.lackOfCohesion2 ?? 0;
+
+    const meshRef = useRef<Mesh>(null);
+    const instability = unit?.analysis?.couplingMetrics?.instability ?? 0;
+    // Animate vibration based on instability
+    useFrame(() => {
+        if (meshRef.current) {
+            if (vibrationEnabled && instability > 0.1) {
+                // Quadratic scaling: small values vibrate less, high values much more
+                const amplitude = VIBRATION_FACTOR * Math.pow(instability, 2);
+                meshRef.current.position.x = position[0] + (Math.random() - 0.5) * amplitude;
+                meshRef.current.position.y = position[1] + (Math.random() - 0.5) * amplitude;
+                meshRef.current.position.z = position[2] + (Math.random() - 0.5) * amplitude;
+            } else {
+                meshRef.current.position.set(...position);
+            }
+        }
+    });
 
     // Memoize geometry for performance
     const geometry = useMemo(() => getDeformedBoxGeometry(size, lcom), [size]);
@@ -115,6 +138,7 @@ const CompUnitRepresentation: React.FC<CubeProps> = ({
 
     return (
         <mesh
+            ref={meshRef}
             position={position}
             geometry={geometry}
             onPointerOver={() => {

@@ -14,6 +14,7 @@ interface CubeRowProps {
     hoveredCube: string | null;
     setHoveredCube: (name: string | null) => void;
     setSelectedCube: (name: string | null) => void;
+    vibrationEnabled: boolean;
 }
 
 const CompUnitRow: React.FC<CubeRowProps> = ({
@@ -21,6 +22,7 @@ const CompUnitRow: React.FC<CubeRowProps> = ({
                                              selectedCube,
                                              setHoveredCube,
                                              setSelectedCube,
+                                             vibrationEnabled,
                                          }) => {
     return (
         <>
@@ -44,7 +46,8 @@ const CompUnitRow: React.FC<CubeRowProps> = ({
                         position={cube.position}
                         label={cube.className}
                         size={cube.size}
-                        unit={cube.unit} // <-- pass the unit here
+                        unit={cube.unit}
+                        vibrationEnabled={vibrationEnabled}
                         onPointerOver={() => setHoveredCube(cube.className)}
                         onPointerOut={() => setHoveredCube(null)}
                         onClick={() => setSelectedCube(cube.className === selectedCube ? null : cube.className)}

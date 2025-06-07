@@ -62,6 +62,7 @@ interface CompUnitsSceneProps {
     projectData: ProjectAnalysisDTO;
     selectedCube: string | null;
     setSelectedCube: (name: string | null, unit: CompUnitWithAnalysisDTO | null) => void;
+    vibrationEnabled: boolean;
 }
 
 /* --------------------------------------------------------------------------
@@ -73,7 +74,7 @@ interface CompUnitsSceneProps {
  * 3D scene for visualizing project architecture.
  * Renders layer boxes, cubes, and dependency lines.
  */
-const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCube, setSelectedCube }) => {
+const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCube, setSelectedCube, vibrationEnabled }) => {
     // ---------------- State for interaction ----------------
     const [hoveredLine, setHoveredLine] = useState<string | null>(null);
     const [hoveredCube, setHoveredCube] = useState<string | null>(null);
@@ -198,6 +199,7 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
                     selectedCube={selectedCube}
                     hoveredCube={hoveredCube}
                     setHoveredCube={setHoveredCube}
+                    vibrationEnabled={vibrationEnabled}
                     setSelectedCube={(name) => {
                         const unit = cubes.find(c => c.className === name)?.unit || null;
                         setSelectedCube(name === selectedCube ? null : name, name === selectedCube ? null : unit);

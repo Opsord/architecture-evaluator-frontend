@@ -8,6 +8,8 @@ const DashboardV2: React.FC = () => {
     const { projectData } = useProjectContext();
     const [selectedCube, setSelectedCube] = useState<string | null>(null);
     const [selectedUnit, setSelectedUnit] = useState<CompUnitWithAnalysisDTO | null>(null);
+    const [vibrationEnabled, setVibrationEnabled] = useState(true);
+
 
     if (!projectData) {
         return (
@@ -30,11 +32,30 @@ const DashboardV2: React.FC = () => {
                             setSelectedCube(name);
                             setSelectedUnit(unit);
                         }}
+                        vibrationEnabled={vibrationEnabled}
                     />
                 </div>
 
                 {/* Info Card */}
                 <div className="w-96 bg-white border-l border-gray-border p-4 overflow-y-auto">
+                    <div className="mb-3 flex items-center">
+                        <label htmlFor="vibration-toggle" className="flex items-center cursor-pointer">
+                            <div className="relative">
+                                <input
+                                    type="checkbox"
+                                    id="vibration-toggle"
+                                    checked={vibrationEnabled}
+                                    onChange={e => setVibrationEnabled(e.target.checked)}
+                                    className="sr-only"
+                                />
+                                <div className={`block w-10 h-6 rounded-full transition-colors duration-200 ${vibrationEnabled ? "bg-swamp-500" : "bg-gray-300"}`}></div>
+                                <div
+                                    className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition transform duration-200 ${vibrationEnabled ? "translate-x-4" : ""}`}
+                                ></div>
+                            </div>
+                            <span className="ml-3 text-sm text-gray-700 select-none">Enable vibration effect</span>
+                        </label>
+                    </div>
                     <CompUnitInfoCard unit={selectedUnit} />
                 </div>
             </div>
