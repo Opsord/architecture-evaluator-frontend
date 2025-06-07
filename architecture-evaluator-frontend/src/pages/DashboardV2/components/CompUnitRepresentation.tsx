@@ -8,7 +8,7 @@ import { BoxGeometry } from "three";
 /* --------------------------------------------------------------------------
  * Key Visual Constants
  * ------------------------------------------------------------------------ */
-const COLOR_DEFAULT = "#F3FEFC";
+
 const COLOR_SELECTED = "#38EED0";
 const COLOR_CONNECTED = "#048A74";
 const COLOR_DIMMED = "#051c1f";
@@ -18,7 +18,18 @@ const DEFORMATION_FACTOR = 0.4; // Factor to control deformation intensity
 /* --------------------------------------------------------------------------
  * Functions
  * ------------------------------------------------------------------------ */
-function getDeformedBoxGeometry(size: [number, number, number], lcom: number) {
+
+/**
+ * Generates a deformed box geometry based on size and LCOM2 value.
+ * @param size - Size of the box in [width, height, depth]
+ * @param lcom - Lack of Cohesion 2 (LCOM2) value to determine deformation
+ * @return {BoxGeometry} Deformed box geometry
+ * @description
+ * This function creates a box geometry and applies a random deformation
+ * based on the LCOM2 value. The deformation is applied by scaling
+ * the vertices of the box randomly within a range determined by the LCOM2 value.
+ */
+function getDeformedBoxGeometry(size: [number, number, number], lcom: number): BoxGeometry {
     const geometry = new BoxGeometry(...size, 2, 2, 2);
     const spikeStrength = lcom * DEFORMATION_FACTOR;
     const position = geometry.attributes.position;
@@ -31,6 +42,28 @@ function getDeformedBoxGeometry(size: [number, number, number], lcom: number) {
     }
     position.needsUpdate = true;
     return geometry;
+}
+
+/**
+ * Calculates the color for a given CC (Cyclomatic Complexity) value.
+ * @param cc - Cyclomatic Complexity value
+ * @param minCC - Minimum CC value for color scaling (default: 1)
+ * @param maxCC - Maximum CC value for color scaling (default: 20)
+ * @return {string} RGB color string in the format "rgb(r,g,b)"
+ * @description
+ * This function maps the CC value to a color gradient from green (low complexity)
+ * to red (high complexity). The color is calculated based on the normalized CC value
+ * within the specified range. The blue channel is kept constant to create a
+ * yellowish-green-red gradient.
+ */
+function getCCColor(cc: number, minCC = 1, maxCC = 20): string {
+    // Clamp and normalize CC
+    const t = Math.min(1, Math.max(0, (cc - minCC) / (maxCC - minCC)));
+    // Interpolate: green (low) to red (high)
+    const r = Math.round(51 + t * (255 - 51));   // 51 (green) to 255 (red)
+    const g = Math.round(255 - t * (255 - 51));  // 255 (green) to 51 (red)
+    const b = 80; // Keep blue constant for a yellowish-green-red gradient
+    return `rgb(${r},${g},${b})`;
 }
 
 /* --------------------------------------------------------------------------
@@ -72,7 +105,8 @@ const CompUnitRepresentation: React.FC<CubeProps> = ({
     // Memoize geometry for performance
     const geometry = useMemo(() => getDeformedBoxGeometry(size, lcom), [size]);
 
-    let color = COLOR_DEFAULT;
+    const cc = unit?.analysis?.complexityMetrics?.approxMcCabeCC ?? 1;
+    let color = getCCColor(cc); // Use gradient color by default
     if (isSelected) color = COLOR_SELECTED;
     else if (isConnected) color = COLOR_CONNECTED;
     else if (dimmed) color = COLOR_DIMMED;
