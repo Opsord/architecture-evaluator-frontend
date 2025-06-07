@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { Html } from "@react-three/drei";
+import { useMemo } from "react";
+import { BoxGeometry } from "three";
 
 /* --------------------------------------------------------------------------
  * Key Visual Constants
@@ -11,6 +13,25 @@ const COLOR_SELECTED = "#38EED0";
 const COLOR_CONNECTED = "#048A74";
 const COLOR_DIMMED = "#051c1f";
 const OPACITY_DIMMED = 0.25;
+const DEFORMATION_FACTOR = 0.4; // Factor to control deformation intensity
+
+/* --------------------------------------------------------------------------
+ * Functions
+ * ------------------------------------------------------------------------ */
+function getDeformedBoxGeometry(size: [number, number, number], lcom: number) {
+    const geometry = new BoxGeometry(...size, 2, 2, 2);
+    const spikeStrength = lcom * DEFORMATION_FACTOR;
+    const position = geometry.attributes.position;
+    for (let i = 0; i < position.count; i++) {
+        const x = position.getX(i);
+        const y = position.getY(i);
+        const z = position.getZ(i);
+        const spike = 1 + Math.random() * spikeStrength;
+        position.setXYZ(i, x * spike, y * spike, z * spike);
+    }
+    position.needsUpdate = true;
+    return geometry;
+}
 
 /* --------------------------------------------------------------------------
  * Types
@@ -19,6 +40,7 @@ interface CubeProps {
     position: [number, number, number];
     label: string;
     size?: [number, number, number];
+    unit?: any;
     onPointerOver?: () => void;
     onPointerOut?: () => void;
     onClick?: () => void;
@@ -30,10 +52,11 @@ interface CubeProps {
 /* --------------------------------------------------------------------------
  * Cube Component
  * ------------------------------------------------------------------------ */
-const Cube: React.FC<CubeProps> = ({
+const CompUnitRepresentation: React.FC<CubeProps> = ({
                                        position,
                                        label,
                                        size = [1, 1, 1],
+                                       unit,
                                        onPointerOver,
                                        onPointerOut,
                                        onClick,
@@ -42,6 +65,12 @@ const Cube: React.FC<CubeProps> = ({
                                        dimmed,
                                    }) => {
     const [hovered, setHovered] = useState(false);
+
+    // Get LCOM2 value (default 0)
+    const lcom = unit?.analysis?.cohesionMetrics?.lackOfCohesion2 ?? 0;
+
+    // Memoize geometry for performance
+    const geometry = useMemo(() => getDeformedBoxGeometry(size, lcom), [size]);
 
     let color = COLOR_DEFAULT;
     if (isSelected) color = COLOR_SELECTED;
@@ -53,6 +82,7 @@ const Cube: React.FC<CubeProps> = ({
     return (
         <mesh
             position={position}
+            geometry={geometry}
             onPointerOver={() => {
                 setHovered(true);
                 onPointerOver?.();
@@ -63,7 +93,6 @@ const Cube: React.FC<CubeProps> = ({
             }}
             onClick={onClick}
         >
-            <boxGeometry args={size} />
             <meshStandardMaterial color={color} transparent={true} opacity={opacity} />
             {(hovered || isSelected) && (
                 <Html position={[0, 1.2, 0]}>
@@ -83,4 +112,4 @@ const Cube: React.FC<CubeProps> = ({
     );
 };
 
-export default Cube;
+export default CompUnitRepresentation;

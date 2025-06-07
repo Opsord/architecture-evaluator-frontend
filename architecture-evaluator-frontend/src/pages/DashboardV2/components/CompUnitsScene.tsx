@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import LayerBox from "./LayerBox";
-import CubeRow from "./CubeRow";
+import CompUnitRow from "./CompUnitRow.tsx";
 import DependencyLinesLayer from "./DependencyLinesLayer";
 import CameraControls from "./CameraControls";
 import type { ProjectAnalysisDTO, CompUnitWithAnalysisDTO } from "../../../types/project-analysis.ts";
@@ -11,7 +11,7 @@ import type { ProjectAnalysisDTO, CompUnitWithAnalysisDTO } from "../../../types
 /* --------------------------------------------------------------------------
  * Constants and Category Definitions
  * ------------------------------------------------------------------------ */
-const GAP = 0.5;                 // Horizontal gap between cubes
+const GAP = 2;                 // Horizontal gap between cubes
 const MIN_SIZE = 1;              // Minimum cube size
 const MAX_SIZE = 3;              // Maximum cube size
 const minLOC = 1;                // Minimum lines of code for scaling
@@ -192,7 +192,7 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
 
             {/* Render rows of cubes for each layer */}
             {rows.map((rowCubes, idx) => (
-                <CubeRow
+                <CompUnitRow
                     key={`row-${idx}`}
                     cubes={rowCubes}
                     selectedCube={selectedCube}

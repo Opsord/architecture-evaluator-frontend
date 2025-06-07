@@ -61,10 +61,10 @@ export interface CouplingMetricsDTO {
 // --------------------------------------------------
 export interface CohesionMetricsDTO {
     lackOfCohesion1: number;
-    lackOfCohesion2: number;
+    lackOfCohesion2: number; // Range: 0-1, where 0 means perfect cohesion
     lackOfCohesion3: number;
     lackOfCohesion4: number;
-    lackOfCohesion5: number;
+    lackOfCohesion5: number; // Range: 0-1, where 0 means perfect cohesion
 }
 
 // --------------------------------------------------

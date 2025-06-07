@@ -1,6 +1,6 @@
 // architecture-evaluator-frontend/src/pages/DashboardV2/components/CubeRow.tsx
 import React from "react";
-import Cube from "./Cube";
+import CompUnitRepresentation from "./CompUnitRepresentation.tsx";
 import type { CompUnitWithAnalysisDTO } from "../../../types/project-analysis";
 
 interface CubeRowProps {
@@ -16,7 +16,7 @@ interface CubeRowProps {
     setSelectedCube: (name: string | null) => void;
 }
 
-const CubeRow: React.FC<CubeRowProps> = ({
+const CompUnitRow: React.FC<CubeRowProps> = ({
                                              cubes,
                                              selectedCube,
                                              setHoveredCube,
@@ -39,11 +39,12 @@ const CubeRow: React.FC<CubeRowProps> = ({
                     dimmed = !isSelected && !isConnected;
                 }
                 return (
-                    <Cube
+                    <CompUnitRepresentation
                         key={cube.className + '-' + idx}
                         position={cube.position}
                         label={cube.className}
                         size={cube.size}
+                        unit={cube.unit} // <-- pass the unit here
                         onPointerOver={() => setHoveredCube(cube.className)}
                         onPointerOut={() => setHoveredCube(null)}
                         onClick={() => setSelectedCube(cube.className === selectedCube ? null : cube.className)}
@@ -57,4 +58,4 @@ const CubeRow: React.FC<CubeRowProps> = ({
     );
 };
 
-export default CubeRow;
+export default CompUnitRow;
