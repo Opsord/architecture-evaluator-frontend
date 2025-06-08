@@ -46,23 +46,36 @@ function getCubeSize(unit: CompUnitWithAnalysisDTO): [number, number, number] {
     return [size, size, size];
 }
 
+function getDisplayName(unit: CompUnitWithAnalysisDTO, categoryKey: string): string {
+    const summary = unit.compUnitSummaryDTO;
+    // For repositories: if className is missing, use the first interface name
+    if (
+        categoryKey === "repositories" &&
+        (!summary.className || summary.className.trim() === "") &&
+        summary.interfaceNames?.length > 0
+    ) {
+        return summary.interfaceNames[0];
+    }
+    return summary.className;
+}
+
 /* --------------------------------------------------------------------------
  * Types
  * ------------------------------------------------------------------------ */
-
-interface CubeInfo {
-    className: string;
-    position: [number, number, number];
-    unit: CompUnitWithAnalysisDTO;
-    rowIdx: number;
-    size: [number, number, number];
-}
 
 interface CompUnitsSceneProps {
     projectData: ProjectAnalysisDTO;
     selectedCube: string | null;
     setSelectedCube: (name: string | null, unit: CompUnitWithAnalysisDTO | null) => void;
     vibrationEnabled: boolean;
+}
+
+export interface CompUnitVisual {
+    data: CompUnitWithAnalysisDTO;
+    displayName: string;
+    position: [number, number, number];
+    size: [number, number, number];
+    rowIdx: number;
 }
 
 /* --------------------------------------------------------------------------
@@ -87,10 +100,11 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
      * - Defensive checks ensure no NaN values are passed to geometry.
      */
     const { cubes, classPosMap, boxes, rows} = useMemo(() => {
-        const cubes: CubeInfo[] = [];
+        const cubes: CompUnitVisual[] = [];
         const classPosMap: Record<string, [number, number, number]> = {};
         const boxes: { rowIdx: number, boxPos: [number, number, number], boxSize: [number, number, number], label: string }[] = [];
-        const rows: CubeInfo[][] = [];
+        const rows: CompUnitVisual[][] = [];
+
 
         let y = 0;
         let visibleRow = 0;
@@ -144,19 +158,20 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
             if (hasUnits) {
                 // Compute cube positions in the row
                 let x = -((totalCubesWidth + totalGapsWidth) / 2);
-                const rowCubes: CubeInfo[] = [];
+                const rowCubes: CompUnitVisual[] = [];
                 centeredUnits.forEach((unit, idx) => {
                     const size = sizes[idx];
-                    const cubeInfo = {
-                        className: unit.compUnitSummaryDTO.className,
-                        position: [x + size[0] / 2, -y, z] as [number, number, number],
-                        unit,
-                        rowIdx: visibleRow,
+                    const displayName = getDisplayName(unit, cat.key);
+                    const cubeInfo: CompUnitVisual = {
+                        data: unit,
+                        displayName,
+                        position: [x + size[0] / 2, -y, z],
                         size,
+                        rowIdx: visibleRow,
                     };
                     cubes.push(cubeInfo);
                     rowCubes.push(cubeInfo);
-                    classPosMap[unit.compUnitSummaryDTO.className] = [x + size[0] / 2, -y, z];
+                    classPosMap[displayName] = [x + size[0] / 2, -y, z];
                     x += size[0] + GAP;
                 });
                 rows.push(rowCubes);
@@ -201,7 +216,7 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
                     setHoveredCube={setHoveredCube}
                     vibrationEnabled={vibrationEnabled}
                     setSelectedCube={(name) => {
-                        const unit = cubes.find(c => c.className === name)?.unit || null;
+                        const unit = cubes.find(c => c.displayName === name)?.data || null;
                         setSelectedCube(name === selectedCube ? null : name, name === selectedCube ? null : unit);
                     }}
                 />

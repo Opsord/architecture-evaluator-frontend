@@ -1,15 +1,10 @@
 // architecture-evaluator-frontend/src/pages/DashboardV2/components/CubeRow.tsx
 import React from "react";
 import CompUnitRepresentation from "./CompUnitRepresentation.tsx";
-import type { CompUnitWithAnalysisDTO } from "../../../types/project-analysis";
+import type { CompUnitVisual } from "./CompUnitsScene.tsx";
 
 interface CubeRowProps {
-    cubes: {
-        className: string;
-        position: [number, number, number];
-        unit: CompUnitWithAnalysisDTO;
-        size: [number, number, number];
-    }[];
+    cubes: CompUnitVisual[];
     selectedCube: string | null;
     hoveredCube: string | null;
     setHoveredCube: (name: string | null) => void;
@@ -18,39 +13,39 @@ interface CubeRowProps {
 }
 
 const CompUnitRow: React.FC<CubeRowProps> = ({
-                                             cubes,
-                                             selectedCube,
-                                             setHoveredCube,
-                                             setSelectedCube,
-                                             vibrationEnabled,
-                                         }) => {
+                                                 cubes,
+                                                 selectedCube,
+                                                 setHoveredCube,
+                                                 setSelectedCube,
+                                                 vibrationEnabled,
+                                             }) => {
     return (
         <>
             {cubes.map((cube, idx) => {
-                let isSelected = selectedCube === cube.className;
+                let isSelected = selectedCube === cube.displayName;
                 let isConnected = false;
                 let dimmed = false;
                 if (selectedCube) {
-                    const selectedDeps = cubes.find(c => c.className === selectedCube)?.unit.compUnitSummaryDTO.dependentClasses ?? [];
+                    const selectedDeps = cubes.find(c => c.displayName === selectedCube)?.data.compUnitSummaryDTO.dependentClasses ?? [];
                     const selectedDependents = cubes
-                        .filter(c => (c.unit.compUnitSummaryDTO.dependentClasses ?? []).includes(selectedCube))
-                        .map(c => c.className);
+                        .filter(c => (c.data.compUnitSummaryDTO.dependentClasses ?? []).includes(selectedCube))
+                        .map(c => c.displayName);
                     isConnected =
-                        selectedDeps.includes(cube.className) ||
-                        selectedDependents.includes(cube.className);
+                        selectedDeps.includes(cube.displayName) ||
+                        selectedDependents.includes(cube.displayName);
                     dimmed = !isSelected && !isConnected;
                 }
                 return (
                     <CompUnitRepresentation
-                        key={cube.className + '-' + idx}
+                        key={cube.displayName + '-' + idx}
                         position={cube.position}
-                        label={cube.className}
+                        label={cube.displayName}
                         size={cube.size}
-                        unit={cube.unit}
+                        unit={cube.data}
                         vibrationEnabled={vibrationEnabled}
-                        onPointerOver={() => setHoveredCube(cube.className)}
+                        onPointerOver={() => setHoveredCube(cube.displayName)}
                         onPointerOut={() => setHoveredCube(null)}
-                        onClick={() => setSelectedCube(cube.className === selectedCube ? null : cube.className)}
+                        onClick={() => setSelectedCube(cube.displayName === selectedCube ? null : cube.displayName)}
                         isSelected={isSelected}
                         isConnected={isConnected}
                         dimmed={dimmed}

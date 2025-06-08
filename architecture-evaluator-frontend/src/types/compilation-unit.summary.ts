@@ -19,6 +19,7 @@ export interface MethodSummaryDTO {
 // --------------------------------------------------
 export interface CompUnitSummaryDTO {
     className: string;
+    interfaceNames: string[];
     methods: MethodSummaryDTO[];
     linesOfCode: number;
     annotationDTOS: AnnotationDTO[];

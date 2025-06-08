@@ -1,14 +1,10 @@
 // architecture-evaluator-frontend/src/pages/DashboardV2/components/DependencyLinesLayer.tsx
 import React from "react";
 import DependencyLine from "./DependencyLine";
-import type { CompUnitWithAnalysisDTO } from "../../../types/project-analysis";
+import type { CompUnitVisual } from "./CompUnitsScene.tsx";
 
 interface DependencyLinesLayerProps {
-    cubes: {
-        className: string;
-        position: [number, number, number];
-        unit: CompUnitWithAnalysisDTO;
-    }[];
+    cubes: CompUnitVisual[];
     classPosMap: Record<string, [number, number, number]>;
     hoveredLine: string | null;
     selectedCube: string | null;
@@ -25,8 +21,8 @@ const DependencyLinesLayer: React.FC<DependencyLinesLayerProps> = ({
     <>
         {cubes.flatMap((cube) => {
             const from = cube.position;
-            const source = cube.className;
-            const deps = cube.unit.compUnitSummaryDTO.dependentClasses ?? [];
+            const source = cube.displayName;
+            const deps = cube.data.compUnitSummaryDTO.dependentClasses ?? [];
             return deps
                 .filter(target => classPosMap[target])
                 .map(target => (
