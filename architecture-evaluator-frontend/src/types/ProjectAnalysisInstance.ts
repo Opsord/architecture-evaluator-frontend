@@ -1,6 +1,7 @@
 // ProjectAnalysisDTO.ts
 import type { ProcessedClassInstance } from "./ProcessedClassInstance.ts";
 import type { PomFileDTO } from "./PomFileInstance.ts";
+import type { GradleFileInstance } from "./GradleFileInstance.ts";
 
 // --------------------------------------------------
 // ProjectAnalysisDTO
@@ -15,4 +16,5 @@ export interface ProjectAnalysisDTO {
     testClasses: ProcessedClassInstance[];
     otherClasses: ProcessedClassInstance[];
     pomFile: PomFileDTO;
+    gradleFile: GradleFileInstance;
 }

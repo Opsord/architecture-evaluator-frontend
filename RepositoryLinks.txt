@@ -5,7 +5,7 @@ https://github.com/PodssilDev/MueblesStgo_Monolitico
 
 Ale
 Front: https://github.com/LilyisusUSACH/AutoFix_Frontend
-Back: https://github.com/LilyisusUSACH/autofix_AutoCareHub (malo)
+Back: https://github.com/LilyisusUSACH/autofix_AutoCareHub (Gradle)
 
 https://github.com/ArielPinochet/Tingeso20205-1
 

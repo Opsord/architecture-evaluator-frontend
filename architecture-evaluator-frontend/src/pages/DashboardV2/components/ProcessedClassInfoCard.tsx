@@ -1,7 +1,36 @@
 import React from "react";
 import type { ProcessedClassInstance } from "../../../types/ProcessedClassInstance.ts";
 
-const CompUnitInfoCard: React.FC<{ unit: ProcessedClassInstance | null }> = ({ unit }) => {
+const metricDescriptions = {
+    linesOfCode: "Lines of Code: Total number of lines in this class.",
+    numberOfMethods: "Number of Methods: Total methods defined in this class.",
+    sumOfExecutableStatements: "Statements: Number of executable statements.",
+    approxMcCabeCC: "Cyclomatic Complexity: Measures the number of linearly independent paths.",
+    improvedCC: "Improved CC: Enhanced cyclomatic complexity metric.",
+    afferentCoupling: "Afferent Coupling (Ca): Number of classes that depend on this class.",
+    efferentCoupling: "Efferent Coupling (Ce): Number of classes this class depends on.",
+    instability: "Instability: Ce / (Ca + Ce), ranges from 0 (stable) to 1 (unstable).",
+    lackOfCohesion1: "LCOM1: Lack of Cohesion metric 1.",
+    lackOfCohesion2: "LCOM2: Lack of Cohesion metric 2.",
+    lackOfCohesion3: "LCOM3: Lack of Cohesion metric 3.",
+    lackOfCohesion4: "LCOM4: Lack of Cohesion metric 4.",
+    lackOfCohesion5: "LCOM5: Lack of Cohesion metric 5.",
+};
+
+const LabelWithTooltip: React.FC<{ label: string; description: string }> = ({ label, description }) => (
+    <span className="flex items-center gap-1">
+        {label}
+        <span
+            className="text-xs text-gray-400 cursor-help"
+            title={description}
+            style={{ borderBottom: "1px dotted #888" }}
+        >
+            ?
+        </span>
+    </span>
+);
+
+const ProcessedClassInfoCard: React.FC<{ unit: ProcessedClassInstance | null }> = ({ unit }) => {
     if (!unit) {
         return (
             <div className="flex items-center justify-center h-full text-gray-400">
@@ -30,11 +59,11 @@ const CompUnitInfoCard: React.FC<{ unit: ProcessedClassInstance | null }> = ({ u
             <div className="mb-5 pb-2 border-b border-gray-border">
                 <div className="text-primary font-semibold text-xs mb-2 tracking-wide">Program Metrics</div>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-1">
-                    <div>LOC:</div>
+                    <LabelWithTooltip label="LOC:" description={metricDescriptions.linesOfCode} />
                     <div className="font-medium">{programMetrics.linesOfCode ?? classInstance.linesOfCode ?? 0}</div>
-                    <div>Methods:</div>
+                    <LabelWithTooltip label="Methods:" description={metricDescriptions.numberOfMethods} />
                     <div className="font-medium">{programMetrics.numberOfMethods ?? classInstance.methods?.length ?? 0}</div>
-                    <div>Statements:</div>
+                    <LabelWithTooltip label="Statements:" description={metricDescriptions.sumOfExecutableStatements} />
                     <div className="font-medium">{programMetrics.sumOfExecutableStatements ?? classInstance.statements?.length ?? 0}</div>
                 </div>
             </div>
@@ -43,10 +72,14 @@ const CompUnitInfoCard: React.FC<{ unit: ProcessedClassInstance | null }> = ({ u
             <div className="mb-5 pb-2 border-b border-gray-border">
                 <div className="text-primary font-semibold text-xs mb-2 tracking-wide">Complexity</div>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-1">
-                    <div>CC:</div>
+                    <LabelWithTooltip label="CC:" description={metricDescriptions.approxMcCabeCC} />
                     <div className="font-medium">{complexityMetrics.approxMcCabeCC ?? 0}</div>
-                    <div>Improved CC:</div>
-                    <div className="font-medium">{complexityMetrics.improvedCC ?? 0}</div>
+                    <LabelWithTooltip label="Improved CC:" description={metricDescriptions.improvedCC} />
+                    <div className="font-medium">
+                        {typeof complexityMetrics.improvedCC === "number"
+                            ? complexityMetrics.improvedCC.toFixed(3)
+                            : "0.000"}
+                    </div>
                 </div>
             </div>
 
@@ -54,12 +87,16 @@ const CompUnitInfoCard: React.FC<{ unit: ProcessedClassInstance | null }> = ({ u
             <div className="mb-5 pb-2 border-b border-gray-border">
                 <div className="text-primary font-semibold text-xs mb-2 tracking-wide">Coupling</div>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-1">
-                    <div>Ca (Afferent):</div>
+                    <LabelWithTooltip label="Ca (Afferent):" description={metricDescriptions.afferentCoupling} />
                     <div className="font-medium">{couplingMetrics.afferentCoupling ?? 0}</div>
-                    <div>Ce (Efferent):</div>
+                    <LabelWithTooltip label="Ce (Efferent):" description={metricDescriptions.efferentCoupling} />
                     <div className="font-medium">{couplingMetrics.efferentCoupling ?? 0}</div>
-                    <div>Instability:</div>
-                    <div className="font-medium">{typeof couplingMetrics.instability === "number" ? couplingMetrics.instability.toFixed(2) : "0.00"}</div>
+                    <LabelWithTooltip label="Instability:" description={metricDescriptions.instability} />
+                    <div className="font-medium">
+                        {typeof couplingMetrics.instability === "number"
+                            ? couplingMetrics.instability.toFixed(3)
+                            : "0.000"}
+                    </div>
                 </div>
             </div>
 
@@ -67,15 +104,15 @@ const CompUnitInfoCard: React.FC<{ unit: ProcessedClassInstance | null }> = ({ u
             <div className="mb-5 pb-2 border-b border-gray-border">
                 <div className="text-primary font-semibold text-xs mb-2 tracking-wide">Cohesion</div>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-1">
-                    <div>LCOM1:</div>
+                    <LabelWithTooltip label="LCOM1:" description={metricDescriptions.lackOfCohesion1} />
                     <div className="font-medium">{cohesionMetrics.lackOfCohesion1 ?? 0}</div>
-                    <div>LCOM2:</div>
+                    <LabelWithTooltip label="LCOM2:" description={metricDescriptions.lackOfCohesion2} />
                     <div className="font-medium">{cohesionMetrics.lackOfCohesion2 ?? 0}</div>
-                    <div>LCOM3:</div>
+                    <LabelWithTooltip label="LCOM3:" description={metricDescriptions.lackOfCohesion3} />
                     <div className="font-medium">{cohesionMetrics.lackOfCohesion3 ?? 0}</div>
-                    <div>LCOM4:</div>
+                    <LabelWithTooltip label="LCOM4:" description={metricDescriptions.lackOfCohesion4} />
                     <div className="font-medium">{cohesionMetrics.lackOfCohesion4 ?? 0}</div>
-                    <div>LCOM5:</div>
+                    <LabelWithTooltip label="LCOM5:" description={metricDescriptions.lackOfCohesion5} />
                     <div className="font-medium">{cohesionMetrics.lackOfCohesion5 ?? 0}</div>
                 </div>
             </div>
@@ -94,4 +131,4 @@ const CompUnitInfoCard: React.FC<{ unit: ProcessedClassInstance | null }> = ({ u
     );
 };
 
-export default CompUnitInfoCard;
+export default ProcessedClassInfoCard;

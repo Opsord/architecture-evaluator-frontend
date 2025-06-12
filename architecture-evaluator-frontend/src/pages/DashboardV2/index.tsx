@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useProjectContext } from "../../context/ProjectContext";
 import CompUnitsScene from "./components/CompUnitsScene";
-import CompUnitInfoCard from "./components/CompUnitInfoCard";
+import ProcessedClassInfoCard from "./components/ProcessedClassInfoCard.tsx";
 import type { ProcessedClassInstance } from "../../types/ProcessedClassInstance.ts";
 
 const DashboardV2: React.FC = () => {
@@ -56,7 +56,7 @@ const DashboardV2: React.FC = () => {
                             <span className="ml-3 text-sm text-gray-700 select-none">Enable vibration effect</span>
                         </label>
                     </div>
-                    <CompUnitInfoCard unit={selectedUnit} />
+                    <ProcessedClassInfoCard unit={selectedUnit} />
                 </div>
             </div>
 
