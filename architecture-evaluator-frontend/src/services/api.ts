@@ -10,18 +10,17 @@ const api = axios.create({
 })
 
 // Analyze uploaded project (ZIP file)
-export const analyzeProjectUpload = (file: File, includeNonInternalDependencies = false): Promise<{data: ProjectAnalysisDTO}> => {
+export const analyzeProjectUpload = (file: File): Promise<{data: ProjectAnalysisDTO}> => {
     const formData = new FormData()
     formData.append('project', file)
 
     return api.post('/analyze-upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        params: { includeNonInternalDependencies }
+        headers: { 'Content-Type': 'multipart/form-data' }
     })
 }
 
 // Analyze GitHub repository
-export const analyzeGitHubRepo = (repoUrl: string, includeNonInternalDependencies = false): Promise<{data: ProjectAnalysisDTO}> =>
+export const analyzeGitHubRepo = (repoUrl: string): Promise<{data: ProjectAnalysisDTO}> =>
     api.post('/analyze-github', null, {
-        params: { repoUrl, includeNonInternalDependencies }
+        params: { repoUrl }
     })

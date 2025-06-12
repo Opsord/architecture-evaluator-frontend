@@ -112,17 +112,18 @@ const CompUnitRepresentation: React.FC<CubeProps> = ({
     const instability = unit?.classAnalysis?.couplingMetrics?.instability ?? 0;
     useFrame(() => {
         if (meshRef.current) {
-            if (vibrationEnabled && instability > 0.1) {
-                const amplitude = VIBRATION_FACTOR * Math.pow(instability, 2);
+            // Clamp instability to avoid excessive vibration
+            const safeInstability = Math.min(instability, 0.99);
+            if (vibrationEnabled && safeInstability > 0.1) {
+                const amplitude = VIBRATION_FACTOR * Math.pow(safeInstability, 2);
                 meshRef.current.position.x = position[0] + (Math.random() - 0.5) * amplitude;
                 meshRef.current.position.y = position[1] + (Math.random() - 0.5) * amplitude;
                 meshRef.current.position.z = position[2] + (Math.random() - 0.5) * amplitude;
             } else {
-                meshRef.current.position.set(...position);
+                meshRef.current.position.set(position[0], position[1], position[2]);
             }
         }
     });
-
     const geometry = useMemo(() => getDeformedBoxGeometry(size, lcom), [size]);
 
     const cc = unit?.classAnalysis?.complexityMetrics?.approxMcCabeCC ?? 1;
