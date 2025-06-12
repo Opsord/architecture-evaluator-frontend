@@ -1,16 +1,6 @@
 import React from "react";
 import type { ProcessedClassInstance } from "../../../types/ProcessedClassInstance.ts";
 
-function inferType(className: string) {
-    const name = className?.toLowerCase?.() ?? "";
-    if (name.includes("controller")) return "Controller";
-    if (name.includes("service")) return "Service";
-    if (name.includes("repo")) return "Repository";
-    if (name.includes("entity")) return "Entity";
-    if (name.includes("test")) return "Test Class";
-    return "Class";
-}
-
 const CompUnitInfoCard: React.FC<{ unit: ProcessedClassInstance | null }> = ({ unit }) => {
     if (!unit) {
         return (
@@ -21,6 +11,7 @@ const CompUnitInfoCard: React.FC<{ unit: ProcessedClassInstance | null }> = ({ u
     }
 
     const classInstance = unit.classInstance ?? {};
+    const classLayerAnnotation = classInstance.layerAnnotation ?? "UNKNOWN";
     const analysis = unit.classAnalysis ?? {};
     const programMetrics = analysis.programMetrics ?? {};
     const complexityMetrics = analysis.complexityMetrics ?? {};
@@ -32,7 +23,7 @@ const CompUnitInfoCard: React.FC<{ unit: ProcessedClassInstance | null }> = ({ u
             {/* Header */}
             <div className="mb-5">
                 <div className="text-2xl font-bold text-swamp-900">{classInstance.name ?? ""}</div>
-                <div className="text-[15px] font-semibold text-primary">{inferType(classInstance.name ?? "")}</div>
+                <div className="text-[15px] font-semibold text-primary">{classLayerAnnotation}</div>
             </div>
 
             {/* Program Metrics */}
