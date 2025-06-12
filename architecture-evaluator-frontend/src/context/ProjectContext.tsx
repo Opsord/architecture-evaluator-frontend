@@ -2,7 +2,7 @@
 // Imports
 // --------------------------------------------------
 import React, { createContext, useContext, useEffect, useState } from "react";
-import type { ProjectAnalysisDTO } from "../types/project-analysis";
+import type { ProjectAnalysisDTO } from "../types/ProjectAnalysisInstance.ts";
 import mockData from "../services/MockData/response-zip.json";
 
 // --------------------------------------------------

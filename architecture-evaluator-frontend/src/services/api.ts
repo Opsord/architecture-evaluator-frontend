@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { ProjectAnalysisDTO } from '../types/project-analysis'
+import type { ProjectAnalysisDTO } from '../types/ProjectAnalysisInstance.ts'
 
 // Axios instance with base configuration
 const api = axios.create({

@@ -1,4 +1,3 @@
-// architecture-evaluator-frontend/src/pages/DashboardV2/components/DependencyLinesLayer.tsx
 import React from "react";
 import DependencyLine from "./DependencyLine";
 import type { CompUnitVisual } from "./CompUnitsScene.tsx";
@@ -22,12 +21,12 @@ const DependencyLinesLayer: React.FC<DependencyLinesLayerProps> = ({
         {cubes.flatMap((cube) => {
             const from = cube.position;
             const source = cube.displayName;
-            const deps = cube.data.compUnitSummaryDTO.dependentClasses ?? [];
+            const deps: string[] = cube.data.classInstance.dependentClasses ?? [];
             return deps
-                .filter(target => classPosMap[target])
-                .map(target => (
+                .filter((target: string) => classPosMap[target])
+                .map((target: string) => (
                     <DependencyLine
-                        key={source + '->' + target}
+                        key={source + "->" + target}
                         from={from}
                         to={classPosMap[target]}
                         source={source}

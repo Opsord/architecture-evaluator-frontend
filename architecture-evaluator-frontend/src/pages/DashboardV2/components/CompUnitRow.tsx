@@ -26,9 +26,10 @@ const CompUnitRow: React.FC<CubeRowProps> = ({
                 let isConnected = false;
                 let dimmed = false;
                 if (selectedCube) {
-                    const selectedDeps = cubes.find(c => c.displayName === selectedCube)?.data.compUnitSummaryDTO.dependentClasses ?? [];
+                    const selectedDeps =
+                        cubes.find(c => c.displayName === selectedCube)?.data.classInstance.dependentClasses ?? [];
                     const selectedDependents = cubes
-                        .filter(c => (c.data.compUnitSummaryDTO.dependentClasses ?? []).includes(selectedCube))
+                        .filter(c => (c.data.classInstance.dependentClasses ?? []).includes(selectedCube))
                         .map(c => c.displayName);
                     isConnected =
                         selectedDeps.includes(cube.displayName) ||

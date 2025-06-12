@@ -5,7 +5,7 @@ import { Html } from "@react-three/drei";
 import { useMemo, useRef } from "react";
 import { BoxGeometry, Mesh } from "three";
 import { useFrame } from "@react-three/fiber";
-import type {CompUnitWithAnalysisDTO} from "../../../types/project-analysis.ts";
+import type { ProcessedClassInstance } from "../../../types/ProcessedClassInstance.ts";
 
 
 /* --------------------------------------------------------------------------
@@ -77,7 +77,7 @@ interface CubeProps {
     position: [number, number, number];
     label: string;
     size?: [number, number, number];
-    unit?: CompUnitWithAnalysisDTO;
+    unit?: ProcessedClassInstance;
     onPointerOver?: () => void;
     onPointerOut?: () => void;
     onClick?: () => void;
@@ -91,30 +91,28 @@ interface CubeProps {
  * Cube Component
  * ------------------------------------------------------------------------ */
 const CompUnitRepresentation: React.FC<CubeProps> = ({
-                                       position,
-                                       label,
-                                       size = [1, 1, 1],
-                                       unit,
-                                       onPointerOver,
-                                       onPointerOut,
-                                       onClick,
-                                       isSelected,
-                                       isConnected,
-                                       dimmed,
-                                        vibrationEnabled = true,
-                                   }) => {
+                                                         position,
+                                                         label,
+                                                         size = [1, 1, 1],
+                                                         unit,
+                                                         onPointerOver,
+                                                         onPointerOut,
+                                                         onClick,
+                                                         isSelected,
+                                                         isConnected,
+                                                         dimmed,
+                                                         vibrationEnabled = true,
+                                                     }) => {
     const [hovered, setHovered] = useState(false);
 
     // Get LCOM2 value (default 0)
-    const lcom = unit?.analysis?.cohesionMetrics?.lackOfCohesion2 ?? 0;
+    const lcom = unit?.classAnalysis?.cohesionMetrics?.lackOfCohesion2 ?? 0;
 
     const meshRef = useRef<Mesh>(null);
-    const instability = unit?.analysis?.couplingMetrics?.instability ?? 0;
-    // Animate vibration based on instability
+    const instability = unit?.classAnalysis?.couplingMetrics?.instability ?? 0;
     useFrame(() => {
         if (meshRef.current) {
             if (vibrationEnabled && instability > 0.1) {
-                // Quadratic scaling: small values vibrate less, high values much more
                 const amplitude = VIBRATION_FACTOR * Math.pow(instability, 2);
                 meshRef.current.position.x = position[0] + (Math.random() - 0.5) * amplitude;
                 meshRef.current.position.y = position[1] + (Math.random() - 0.5) * amplitude;
@@ -125,11 +123,10 @@ const CompUnitRepresentation: React.FC<CubeProps> = ({
         }
     });
 
-    // Memoize geometry for performance
     const geometry = useMemo(() => getDeformedBoxGeometry(size, lcom), [size]);
 
-    const cc = unit?.analysis?.complexityMetrics?.approxMcCabeCC ?? 1;
-    let color = getCCColor(cc); // Use gradient color by default
+    const cc = unit?.classAnalysis?.complexityMetrics?.approxMcCabeCC ?? 1;
+    let color = getCCColor(cc);
     if (isSelected) color = COLOR_SELECTED;
     else if (isConnected) color = COLOR_CONNECTED;
     else if (dimmed) color = COLOR_DIMMED;

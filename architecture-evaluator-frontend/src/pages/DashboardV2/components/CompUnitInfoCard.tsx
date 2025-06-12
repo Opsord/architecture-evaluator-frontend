@@ -1,5 +1,5 @@
 import React from "react";
-import type { CompUnitWithAnalysisDTO } from "../../../types/project-analysis";
+import type { ProcessedClassInstance } from "../../../types/ProcessedClassInstance.ts";
 
 function inferType(className: string) {
     const name = className?.toLowerCase?.() ?? "";
@@ -11,7 +11,7 @@ function inferType(className: string) {
     return "Class";
 }
 
-const CompUnitInfoCard: React.FC<{ unit: CompUnitWithAnalysisDTO | null }> = ({ unit }) => {
+const CompUnitInfoCard: React.FC<{ unit: ProcessedClassInstance | null }> = ({ unit }) => {
     if (!unit) {
         return (
             <div className="flex items-center justify-center h-full text-gray-400">
@@ -20,8 +20,8 @@ const CompUnitInfoCard: React.FC<{ unit: CompUnitWithAnalysisDTO | null }> = ({ 
         );
     }
 
-    const compUnitSummaryDTO = unit.compUnitSummaryDTO ?? {};
-    const analysis = unit.analysis ?? {};
+    const classInstance = unit.classInstance ?? {};
+    const analysis = unit.classAnalysis ?? {};
     const programMetrics = analysis.programMetrics ?? {};
     const complexityMetrics = analysis.complexityMetrics ?? {};
     const couplingMetrics = analysis.couplingMetrics ?? {};
@@ -31,8 +31,8 @@ const CompUnitInfoCard: React.FC<{ unit: CompUnitWithAnalysisDTO | null }> = ({ 
         <div className="bg-white/30 backdrop-blur-md rounded-2xl p-7 text-[15px] min-h-[420px] max-h-[80vh] overflow-y-auto sticky top-8">
             {/* Header */}
             <div className="mb-5">
-                <div className="text-2xl font-bold text-swamp-900">{compUnitSummaryDTO.className ?? ""}</div>
-                <div className="text-[15px] font-semibold text-primary">{inferType(compUnitSummaryDTO.className ?? "")}</div>
+                <div className="text-2xl font-bold text-swamp-900">{classInstance.name ?? ""}</div>
+                <div className="text-[15px] font-semibold text-primary">{inferType(classInstance.name ?? "")}</div>
             </div>
 
             {/* Program Metrics */}
@@ -40,11 +40,11 @@ const CompUnitInfoCard: React.FC<{ unit: CompUnitWithAnalysisDTO | null }> = ({ 
                 <div className="text-primary font-semibold text-xs mb-2 tracking-wide">Program Metrics</div>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-1">
                     <div>LOC:</div>
-                    <div className="font-medium">{programMetrics.linesOfCode ?? 0}</div>
+                    <div className="font-medium">{programMetrics.linesOfCode ?? classInstance.linesOfCode ?? 0}</div>
                     <div>Methods:</div>
-                    <div className="font-medium">{programMetrics.numberOfMethods ?? 0}</div>
+                    <div className="font-medium">{programMetrics.numberOfMethods ?? classInstance.methods?.length ?? 0}</div>
                     <div>Statements:</div>
-                    <div className="font-medium">{programMetrics.sumOfExecutableStatements ?? 0}</div>
+                    <div className="font-medium">{programMetrics.sumOfExecutableStatements ?? classInstance.statements?.length ?? 0}</div>
                 </div>
             </div>
 
@@ -93,8 +93,8 @@ const CompUnitInfoCard: React.FC<{ unit: CompUnitWithAnalysisDTO | null }> = ({ 
             <div>
                 <div className="text-primary font-semibold text-xs mb-2 tracking-wide">Dependencies</div>
                 <div className="text-[13px] text-gray-700">
-                    {(compUnitSummaryDTO.dependentClasses?.length ?? 0) > 0
-                        ? compUnitSummaryDTO.dependentClasses.join(", ")
+                    {(classInstance.dependentClasses?.length ?? 0) > 0
+                        ? classInstance.dependentClasses.join(", ")
                         : <span className="text-gray-400">No dependencies</span>
                     }
                 </div>

@@ -6,12 +6,13 @@ import LayerBox from "./LayerBox";
 import CompUnitRow from "./CompUnitRow.tsx";
 import DependencyLinesLayer from "./DependencyLinesLayer";
 import CameraControls from "./CameraControls";
-import type { ProjectAnalysisDTO, CompUnitWithAnalysisDTO } from "../../../types/project-analysis.ts";
+import type { ProjectAnalysisDTO } from "../../../types/ProjectAnalysisInstance.ts";
+import type { ProcessedClassInstance } from "../../../types/ProcessedClassInstance.ts";
 
 /* --------------------------------------------------------------------------
  * Constants and Category Definitions
  * ------------------------------------------------------------------------ */
-const GAP = 2;                 // Horizontal gap between cubes
+const GAP = 2;                   // Horizontal gap between cubes
 const MIN_SIZE = 1;              // Minimum cube size
 const MAX_SIZE = 3;              // Maximum cube size
 const minLOC = 1;                // Minimum lines of code for scaling
@@ -39,24 +40,24 @@ const categories = [
  * Computes the cube size based on lines of code.
  * Ensures a valid size even if metrics are missing.
  */
-function getCubeSize(unit: CompUnitWithAnalysisDTO): [number, number, number] {
-    const loc = unit.analysis.programMetrics.linesOfCode ?? 1;
-    // Define min/max LOC for scaling
+function getCubeSize(unit: ProcessedClassInstance): [number, number, number] {
+    const loc = unit.classInstance?.linesOfCode ?? 1;
     const size = MIN_SIZE + ((Math.min(loc, maxLOC) - minLOC) / (maxLOC - minLOC)) * (MAX_SIZE - MIN_SIZE);
     return [size, size, size];
 }
 
-function getDisplayName(unit: CompUnitWithAnalysisDTO, categoryKey: string): string {
-    const summary = unit.compUnitSummaryDTO;
-    // For repositories: if className is missing, use the first interface name
+function getDisplayName(unit: ProcessedClassInstance, categoryKey: string): string {
+    const className = unit.classInstance?.name ?? "";
+    if (!className.trim()) return `Unnamed-${Math.random()}`; // fallback for empty names
+    // For repositories: if className is missing, use the first implemented interface
     if (
         categoryKey === "repositories" &&
-        (!summary.className || summary.className.trim() === "") &&
-        summary.interfaceNames?.length > 0
+        (!className || className.trim() === "") &&
+        unit.classInstance?.implementedInterfaces?.length > 0
     ) {
-        return summary.interfaceNames[0];
+        return unit.classInstance.implementedInterfaces[0];
     }
-    return summary.className;
+    return className;
 }
 
 /* --------------------------------------------------------------------------
@@ -66,12 +67,12 @@ function getDisplayName(unit: CompUnitWithAnalysisDTO, categoryKey: string): str
 interface CompUnitsSceneProps {
     projectData: ProjectAnalysisDTO;
     selectedCube: string | null;
-    setSelectedCube: (name: string | null, unit: CompUnitWithAnalysisDTO | null) => void;
+    setSelectedCube: (name: string | null, unit: ProcessedClassInstance | null) => void;
     vibrationEnabled: boolean;
 }
 
 export interface CompUnitVisual {
-    data: CompUnitWithAnalysisDTO;
+    data: ProcessedClassInstance;
     displayName: string;
     position: [number, number, number];
     size: [number, number, number];
@@ -88,28 +89,19 @@ export interface CompUnitVisual {
  * Renders layer boxes, cubes, and dependency lines.
  */
 const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCube, setSelectedCube, vibrationEnabled }) => {
-    // ---------------- State for interaction ----------------
     const [hoveredLine, setHoveredLine] = useState<string | null>(null);
     const [hoveredCube, setHoveredCube] = useState<string | null>(null);
 
-    // ---------------- Layout Calculation ----------------
-    /**
-     * Precomputes all cube positions, box sizes, and dependency maps.
-     * - Each row's Y position is based on the sum of previous box heights and vertical gaps.
-     * - Each box's height adapts to the tallest cube in its row plus a margin.
-     * - Defensive checks ensure no NaN values are passed to geometry.
-     */
-    const { cubes, classPosMap, boxes, rows} = useMemo(() => {
+    const { cubes, classPosMap, boxes, rows } = useMemo(() => {
         const cubes: CompUnitVisual[] = [];
         const classPosMap: Record<string, [number, number, number]> = {};
         const boxes: { rowIdx: number, boxPos: [number, number, number], boxSize: [number, number, number], label: string }[] = [];
         const rows: CompUnitVisual[][] = [];
 
-
         let y = 0;
         let visibleRow = 0;
         categories.forEach((cat) => {
-            let units: CompUnitWithAnalysisDTO[] = [];
+            let units: ProcessedClassInstance[] = [];
             if (cat.key === "entities_documents") {
                 units = [
                     ...(projectData.entities || []),
@@ -122,8 +114,8 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
             if (units.length === 0) return;
 
             // Center largest units in the row
-            const sortedUnits = [...units].sort((a, b) => b.compUnitSummaryDTO.linesOfCode - a.compUnitSummaryDTO.linesOfCode);
-            const centeredUnits: CompUnitWithAnalysisDTO[] = new Array(sortedUnits.length);
+            const sortedUnits = [...units].sort((a, b) => (b.classInstance?.linesOfCode ?? 0) - (a.classInstance?.linesOfCode ?? 0));
+            const centeredUnits: ProcessedClassInstance[] = new Array(sortedUnits.length);
             let leftIdx = Math.floor(sortedUnits.length / 2) - 1;
             let rightIdx = Math.floor(sortedUnits.length / 2) + 1;
             centeredUnits[Math.floor(sortedUnits.length / 2)] = sortedUnits[0];
@@ -143,7 +135,6 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
             ) : minBoxWidth;
             Math.max(...sizes.map(s => s[1]), MIN_SIZE);
             const boxHeight = hasUnits ? Math.max(...units.map(u => getCubeSize(u)[1]), MIN_SIZE) + boxVerticalMargin : MIN_SIZE + boxVerticalMargin;
-
 
             const z = 0;
             const boxPos: [number, number, number] = [0, -y, 0];
@@ -177,16 +168,12 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
                 rows.push(rowCubes);
             }
 
-            // Move Y down for next row
             y += boxHeight + verticalGap;
             visibleRow++;
         });
         return { cubes, classPosMap, boxes, rows };
     }, [projectData, projectData.documents]);
 
-    /* ----------------------------------------------------------------------
-     * Render 3D Scene
-     * -------------------------------------------------------------------- */
     return (
         <Canvas camera={{ position: [0, 0, 20], fov: 60 }}>
             <ambientLight intensity={0.5} />
@@ -194,7 +181,6 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
 
             {/* Render translucent boxes for each architectural layer */}
             {boxes.map((box, idx) => {
-                // Defensive: ensure no NaN in box size
                 const safeBoxSize = box.boxSize.map(v => (isNaN(v) ? 1 : v)) as [number, number, number];
                 return (
                     <LayerBox
@@ -231,7 +217,6 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
                 setHoveredLine={setHoveredLine}
             />
 
-            {/* Camera controls for orbit, pan, and zoom */}
             <CameraControls />
         </Canvas>
     );

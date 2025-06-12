@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { useProjectContext } from "../../context/ProjectContext";
 import CompUnitsScene from "./components/CompUnitsScene";
 import CompUnitInfoCard from "./components/CompUnitInfoCard";
-import type { CompUnitWithAnalysisDTO } from "../../types/project-analysis";
+import type { ProcessedClassInstance } from "../../types/ProcessedClassInstance.ts";
 
 const DashboardV2: React.FC = () => {
     const { projectData } = useProjectContext();
     const [selectedCube, setSelectedCube] = useState<string | null>(null);
-    const [selectedUnit, setSelectedUnit] = useState<CompUnitWithAnalysisDTO | null>(null);
+    const [selectedUnit, setSelectedUnit] = useState<ProcessedClassInstance | null>(null);
     const [vibrationEnabled, setVibrationEnabled] = useState(true);
 
 
