@@ -120,10 +120,31 @@ const ProcessedClassInfoCard: React.FC<{ unit: ProcessedClassInstance | null }> 
             {/* Dependencies */}
             <div>
                 <div className="text-primary font-semibold text-xs mb-2 tracking-wide">Dependencies</div>
-                <div className="text-[13px] text-gray-700">
+                <div className="flex flex-wrap gap-2 mb-3">
                     {(classInstance.dependentClasses?.length ?? 0) > 0
-                        ? classInstance.dependentClasses.join(", ")
-                        : <span className="text-gray-400">No dependencies</span>
+                        ? classInstance.dependentClasses.map((dep: string) => (
+                            <span
+                                key={dep}
+                                className="bg-bright-turquoise-100 text-bright-turquoise-800 px-2 py-0.5 rounded-full text-xs font-medium border border-bright-turquoise-200 shadow-sm"
+                            >
+                    {dep}
+                </span>
+                        ))
+                        : <span className="text-gray-400 italic">No dependencies</span>
+                    }
+                </div>
+                <div className="text-primary font-semibold text-xs mb-2 tracking-wide">Depends on:</div>
+                <div className="flex flex-wrap gap-2">
+                    {(classInstance.classDependencies?.length ?? 0) > 0
+                        ? classInstance.classDependencies.map((dep: string) => (
+                            <span
+                                key={dep}
+                                className="bg-swamp-100 text-swamp-800 px-2 py-0.5 rounded-full text-xs font-medium border border-swamp-200 shadow-sm"
+                            >
+                    {dep}
+                </span>
+                        ))
+                        : <span className="text-gray-400 italic">No dependencies</span>
                     }
                 </div>
             </div>
