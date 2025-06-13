@@ -48,7 +48,7 @@ const ProcessedClassInfoCard: React.FC<{ unit: ProcessedClassInstance | null }> 
     const cohesionMetrics = analysis.cohesionMetrics ?? {};
 
     return (
-        <div className="bg-white/30 backdrop-blur-md rounded-2xl p-7 text-[15px] min-h-[420px] max-h-[80vh] overflow-y-auto sticky top-8">
+        <div className="bg-white/30 backdrop-blur-md rounded-2xl p-7 text-[15px] h-full flex flex-col overflow-y-auto">
             {/* Header */}
             <div className="mb-5">
                 <div className="text-2xl font-bold text-swamp-900">{classInstance.name ?? ""}</div>

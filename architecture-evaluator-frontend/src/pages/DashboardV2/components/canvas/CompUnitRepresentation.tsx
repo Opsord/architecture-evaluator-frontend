@@ -5,7 +5,7 @@ import { Html } from "@react-three/drei";
 import { useMemo, useRef } from "react";
 import { BoxGeometry, Mesh } from "three";
 import { useFrame } from "@react-three/fiber";
-import type { ProcessedClassInstance } from "../../../types/ProcessedClassInstance.ts";
+import type { ProcessedClassInstance } from "../../../../types/ProcessedClassInstance.ts";
 
 
 /* --------------------------------------------------------------------------
@@ -63,10 +63,27 @@ function getDeformedBoxGeometry(size: [number, number, number], lcom: number): B
 function getCCColor(cc: number, minCC = 1, maxCC = 20): string {
     // Clamp and normalize CC
     const t = Math.min(1, Math.max(0, (cc - minCC) / (maxCC - minCC)));
-    // Interpolate: green (low) to red (high)
-    const r = Math.round(51 + t * (255 - 51));   // 51 (green) to 255 (red)
-    const g = Math.round(255 - t * (255 - 51));  // 255 (green) to 51 (red)
-    const b = 80; // Keep blue constant for a yellowish-green-red gradient
+    let r = 0, g = 0, b = 0;
+
+    if (t < 0.5) {
+        // Green to Yellow
+        const localT = t / 0.5;
+        r = Math.round(51 + (255 - 51) * localT);   // 51 → 255
+        g = 255;
+        b = 51;
+    } else if (t < 0.8) {
+        // Yellow to Orange
+        const localT = (t - 0.5) / 0.3;
+        r = 255;
+        g = Math.round(255 - (255 - 165) * localT); // 255 → 165
+        b = 51;
+    } else {
+        // Orange to Red
+        const localT = (t - 0.8) / 0.2;
+        r = 255;
+        g = Math.round(165 - (165 - 51) * localT);  // 165 → 51
+        b = 51;
+    }
     return `rgb(${r},${g},${b})`;
 }
 

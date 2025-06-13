@@ -2,12 +2,12 @@
 
 import React, { useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import LayerBox from "./LayerBox";
+import LayerBox from "./LayerBox.tsx";
 import CompUnitRow from "./CompUnitRow.tsx";
-import DependencyLinesLayer from "./DependencyLinesLayer";
-import CameraControls from "./CameraControls";
-import type { ProjectAnalysisDTO } from "../../../types/ProjectAnalysisInstance.ts";
-import type { ProcessedClassInstance } from "../../../types/ProcessedClassInstance.ts";
+import DependencyLinesLayer from "./DependencyLinesLayer.tsx";
+import CameraControls from "./CameraControls.tsx";
+import type { ProjectAnalysisDTO } from "../../../../types/ProjectAnalysisInstance.ts";
+import type { ProcessedClassInstance } from "../../../../types/ProcessedClassInstance.ts";
 
 /* --------------------------------------------------------------------------
  * Constants and Category Definitions

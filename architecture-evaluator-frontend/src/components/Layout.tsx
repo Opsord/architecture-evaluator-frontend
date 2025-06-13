@@ -10,7 +10,7 @@ export default function Layout({ children }: LayoutProps) {
     return (
         <div className="h-screen flex flex-col bg-gradient-to-br from-background-light via-bright-turquoise-50 to-background-dark overflow-hidden">
             <Navbar />
-            <main className="flex-1 flex flex-col items-stretch justify-stretch overflow-hidden">
+            <main className="flex-1 flex flex-col items-stretch justify-stretch overflow-hidden p-3">
                 {children}
             </main>
             <Footer />
