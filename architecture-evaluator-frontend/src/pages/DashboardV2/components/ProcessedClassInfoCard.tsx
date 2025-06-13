@@ -119,7 +119,7 @@ const ProcessedClassInfoCard: React.FC<{ unit: ProcessedClassInstance | null }> 
 
             {/* Dependencies */}
             <div>
-                <div className="text-primary font-semibold text-xs mb-2 tracking-wide">Dependencies</div>
+                <div className="text-primary font-semibold text-xs mb-2 tracking-wide">Classes that depends on this:</div>
                 <div className="flex flex-wrap gap-2 mb-3">
                     {(classInstance.dependentClasses?.length ?? 0) > 0
                         ? classInstance.dependentClasses.map((dep: string) => (

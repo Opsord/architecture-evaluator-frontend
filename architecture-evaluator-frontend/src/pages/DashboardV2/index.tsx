@@ -10,6 +10,7 @@ const DashboardV2: React.FC = () => {
     const [selectedCube, setSelectedCube] = useState<string | null>(null);
     const [selectedUnit, setSelectedUnit] = useState<ProcessedClassInstance | null>(null);
     const [vibrationEnabled, setVibrationEnabled] = useState(true);
+    const [legendVisible, setLegendVisible] = useState(true);
 
     if (!projectData) {
         return (
@@ -35,7 +36,7 @@ const DashboardV2: React.FC = () => {
                     />
                 </div>
                 {/* 2. Options */}
-                <div className="col-start-4 bg-white rounded-xl shadow p-4 flex items-center">
+                <div className="col-start-4 bg-white rounded-xl shadow p-3 flex flex-row items-center justify-center gap-2 min-h-[56px]">
                     <label htmlFor="vibration-toggle" className="flex items-center cursor-pointer">
                         <div className="relative">
                             <input
@@ -50,17 +51,34 @@ const DashboardV2: React.FC = () => {
                                 className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition transform duration-200 ${vibrationEnabled ? "translate-x-4" : ""}`}
                             ></div>
                         </div>
-                        <span className="ml-3 text-sm text-gray-700 select-none">Enable vibration effect</span>
+                        <span className="ml-2 text-sm text-gray-700 select-none">Vibration</span>
                     </label>
+                    {!legendVisible && (
+                        <button
+                            onClick={() => setLegendVisible(true)}
+                            className="px-3 py-1 bg-bright-turquoise-100 text-bright-turquoise-800 rounded-full border border-bright-turquoise-200 shadow hover:bg-bright-turquoise-200 font-semibold transition text-sm"
+                            type="button"
+                        >
+                            Show Legend
+                        </button>
+                    )}
                 </div>
                 {/* 3. Info Card */}
-                <div className="row-span-4 col-start-4 row-start-2 bg-white rounded-xl shadow p-4 h-full flex flex-col overflow-y-auto">
+                <div
+                    className={
+                        legendVisible
+                            ? "row-span-4 col-start-4 row-start-2 bg-white rounded-xl shadow p-4 h-full flex flex-col overflow-y-auto"
+                            : "row-span-7 col-start-4 row-start-2 bg-white rounded-xl shadow p-4 h-full flex flex-col overflow-y-auto"
+                    }
+                >
                     <ProcessedClassInfoCard unit={selectedUnit} />
                 </div>
                 {/* 4. Legend */}
-                <div className="row-span-3 col-start-4 row-start-6 bg-white rounded-xl shadow p-0 flex">
-                    <DashboardLegend />
-                </div>
+                {legendVisible && (
+                    <div className="row-span-3 col-start-4 row-start-6 bg-white rounded-xl shadow p-0 flex">
+                        <DashboardLegend onClose={() => setLegendVisible(false)} />
+                    </div>
+                )}
             </div>
         </div>
     );

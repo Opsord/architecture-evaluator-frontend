@@ -1,7 +1,21 @@
 import React from "react";
 
-const DashboardLegend: React.FC = () => (
-    <div className="flex flex-col items-center justify-center gap-4 p-5 w-full h-full bg-gradient-to-br from-bright-turquoise-50 to-white rounded-2xl shadow-inner border border-gray-200">
+type DashboardLegendProps = {
+    onClose?: () => void;
+};
+
+const DashboardLegend: React.FC<DashboardLegendProps> = ({ onClose }) => (
+    <div className="relative flex flex-col items-center justify-center gap-4 p-5 w-full h-full bg-gradient-to-br from-bright-turquoise-50 to-white rounded-2xl shadow-inner border border-gray-200">
+        {onClose && (
+            <button
+                onClick={onClose}
+                className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-xl font-bold focus:outline-none"
+                aria-label="Close legend"
+                type="button"
+            >
+                ×
+            </button>
+        )}
         <div className="w-full flex flex-col items-center">
             <div className="font-bold text-lg text-primary mb-2 tracking-wide">Legend</div>
             <div className="mb-4 w-full flex flex-col items-center">
