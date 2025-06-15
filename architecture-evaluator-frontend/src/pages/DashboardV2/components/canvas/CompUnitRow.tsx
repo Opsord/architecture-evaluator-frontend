@@ -1,10 +1,14 @@
-// architecture-evaluator-frontend/src/pages/DashboardV2/components/CubeRow.tsx
 import React from "react";
 import CompUnitRepresentation from "./CompUnitRepresentation.tsx";
 import type { CompUnitVisual } from "./CompUnitsScene.tsx";
 
 interface CubeRowProps {
-    cubes: CompUnitVisual[];
+    cubes: (CompUnitVisual & {
+        isSelected?: boolean;
+        isDependency?: boolean;
+        isDependent?: boolean;
+        dimmed?: boolean;
+    })[];
     selectedCube: string | null;
     hoveredCube: string | null;
     setHoveredCube: (name: string | null) => void;
@@ -21,38 +25,23 @@ const CompUnitRow: React.FC<CubeRowProps> = ({
                                              }) => {
     return (
         <>
-            {cubes.map((cube, idx) => {
-                let isSelected = selectedCube === cube.displayName;
-                let isConnected = false;
-                let dimmed = false;
-                if (selectedCube) {
-                    const selectedDeps =
-                        cubes.find(c => c.displayName === selectedCube)?.data.classInstance.dependentClasses ?? [];
-                    const selectedDependents = cubes
-                        .filter(c => (c.data.classInstance.dependentClasses ?? []).includes(selectedCube))
-                        .map(c => c.displayName);
-                    isConnected =
-                        selectedDeps.includes(cube.displayName) ||
-                        selectedDependents.includes(cube.displayName);
-                    dimmed = !isSelected && !isConnected;
-                }
-                return (
-                    <CompUnitRepresentation
-                        key={cube.displayName + '-' + idx}
-                        position={cube.position}
-                        label={cube.displayName}
-                        size={cube.size}
-                        unit={cube.data}
-                        vibrationEnabled={vibrationEnabled}
-                        onPointerOver={() => setHoveredCube(cube.displayName)}
-                        onPointerOut={() => setHoveredCube(null)}
-                        onClick={() => setSelectedCube(cube.displayName === selectedCube ? null : cube.displayName)}
-                        isSelected={isSelected}
-                        isConnected={isConnected}
-                        dimmed={dimmed}
-                    />
-                );
-            })}
+            {cubes.map((cube, idx) => (
+                <CompUnitRepresentation
+                    key={cube.displayName + '-' + idx}
+                    position={cube.position}
+                    label={cube.displayName}
+                    size={cube.size}
+                    unit={cube.data}
+                    vibrationEnabled={vibrationEnabled}
+                    onPointerOver={() => setHoveredCube(cube.displayName)}
+                    onPointerOut={() => setHoveredCube(null)}
+                    onClick={() => setSelectedCube(cube.displayName === selectedCube ? null : cube.displayName)}
+                    isSelected={cube.isSelected}
+                    isDependency={cube.isDependency}
+                    isDependent={cube.isDependent}
+                    dimmed={cube.dimmed}
+                />
+            ))}
         </>
     );
 };

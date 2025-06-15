@@ -12,8 +12,10 @@ import type { ProcessedClassInstance } from "../../../../types/ProcessedClassIns
  * Key Visual Constants
  * ------------------------------------------------------------------------ */
 
+const COLOR_DEPENDENCY = "#6ecb63"; // verde
+const COLOR_DEPENDENT = "#ffb347";  // naranja
+
 const COLOR_SELECTED = "#38EED0";
-const COLOR_CONNECTED = "#048A74";
 const COLOR_DIMMED = "#051c1f";
 const OPACITY_DIMMED = 0.25;
 const DEFORMATION_FACTOR = 0.4; // Factor to control deformation intensity
@@ -102,6 +104,8 @@ interface CubeProps {
     isConnected?: boolean;
     dimmed?: boolean;
     vibrationEnabled?: boolean;
+    isDependency?: boolean;
+    isDependent?: boolean;
 }
 
 /* --------------------------------------------------------------------------
@@ -116,7 +120,8 @@ const CompUnitRepresentation: React.FC<CubeProps> = ({
                                                          onPointerOut,
                                                          onClick,
                                                          isSelected,
-                                                         isConnected,
+                                                         isDependency,
+                                                         isDependent,
                                                          dimmed,
                                                          vibrationEnabled = true,
                                                      }) => {
@@ -146,7 +151,8 @@ const CompUnitRepresentation: React.FC<CubeProps> = ({
     const cc = unit?.classAnalysis?.complexityMetrics?.approxMcCabeCC ?? 1;
     let color = getCCColor(cc);
     if (isSelected) color = COLOR_SELECTED;
-    else if (isConnected) color = COLOR_CONNECTED;
+    else if (isDependency) color = COLOR_DEPENDENCY;
+    else if (isDependent) color = COLOR_DEPENDENT;
     else if (dimmed) color = COLOR_DIMMED;
 
     const opacity = dimmed ? OPACITY_DIMMED : 1;

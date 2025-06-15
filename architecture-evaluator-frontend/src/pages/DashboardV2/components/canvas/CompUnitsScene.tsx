@@ -174,6 +174,24 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
         return { cubes, classPosMap, boxes, rows };
     }, [projectData, projectData.documents]);
 
+    // --- Compute dependency flags for all cubes ---
+    const selectedUnit = selectedCube ? cubes.find(c => c.displayName === selectedCube)?.data : null;
+    const dependencies = selectedUnit?.classInstance.classDependencies ?? [];
+    const dependents = selectedUnit
+        ? cubes
+            .filter(c => selectedCube && (c.data.classInstance.classDependencies ?? []).includes(selectedCube))
+            .map(c => c.displayName)
+        : [];
+
+    // Add flags to all cubes
+    const cubesWithFlags = cubes.map(cube => ({
+        ...cube,
+        isSelected: selectedCube === cube.displayName,
+        isDependency: selectedCube ? dependencies.includes(cube.displayName) : false,
+        isDependent: selectedCube ? dependents.includes(cube.displayName) : false,
+        dimmed: !!selectedCube && !dependencies.includes(cube.displayName) && !dependents.includes(cube.displayName) && selectedCube !== cube.displayName,
+    }));
+
     return (
         <Canvas camera={{ position: [0, 0, 20], fov: 60 }}>
             <ambientLight intensity={0.5} />
@@ -193,10 +211,10 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
             })}
 
             {/* Render rows of cubes for each layer */}
-            {rows.map((rowCubes, idx) => (
+            {rows.map((_rowCubes, idx) => (
                 <CompUnitRow
                     key={`row-${idx}`}
-                    cubes={rowCubes}
+                    cubes={cubesWithFlags.filter(c => c.rowIdx === idx)}
                     selectedCube={selectedCube}
                     hoveredCube={hoveredCube}
                     setHoveredCube={setHoveredCube}

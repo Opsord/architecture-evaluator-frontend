@@ -2,7 +2,7 @@ import React from "react";
 import DependencyLine from "./DependencyLine.tsx";
 import type { CompUnitVisual } from "./CompUnitsScene.tsx";
 import { LayerAnnotation } from "../../../../types/class/LayerAnnotation.ts";
-import { ProcessedClassInstance } from "../../../../types/ProcessedClassInstance.ts";
+import type { ProcessedClassInstance } from "../../../../types/ProcessedClassInstance.ts";
 
 interface DependencyLinesLayerProps {
     cubes: CompUnitVisual[];
