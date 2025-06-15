@@ -2,6 +2,7 @@ import React from "react";
 import DependencyLine from "./DependencyLine.tsx";
 import type { CompUnitVisual } from "./CompUnitsScene.tsx";
 import { LayerAnnotation } from "../../../../types/class/LayerAnnotation.ts";
+import { ProcessedClassInstance } from "../../../../types/ProcessedClassInstance.ts";
 
 interface DependencyLinesLayerProps {
     cubes: CompUnitVisual[];
@@ -9,6 +10,7 @@ interface DependencyLinesLayerProps {
     hoveredLine: string | null;
     selectedCube: string | null;
     setHoveredLine: (key: string | null) => void;
+    selectedUnit?: ProcessedClassInstance | null;
 }
 
 // Helper to get a cube by displayName
@@ -37,7 +39,12 @@ const DependencyLinesLayer: React.FC<DependencyLinesLayerProps> = ({
                                                                        hoveredLine,
                                                                        selectedCube,
                                                                        setHoveredLine,
+                                                                       selectedUnit,
                                                                    }) => {
+    // Get the class dependencies and dependent classes from the selected unit
+    const classDependencies = selectedUnit?.classInstance?.classDependencies ?? [];
+    const dependentClasses = selectedUnit?.classInstance?.dependentClasses ?? [];
+
     return (
         <>
             {cubes.flatMap((cube) => {
@@ -49,22 +56,34 @@ const DependencyLinesLayer: React.FC<DependencyLinesLayerProps> = ({
                         classPosMap[target] &&
                         shouldShowDependencyLine(cube, getCubeByName(cubes, target))
                     )
-                    .map((target: string) => (
-                        <DependencyLine
-                            key={source + "->" + target}
-                            from={from}
-                            to={classPosMap[target]}
-                            source={source}
-                            target={target}
-                            hoveredLine={hoveredLine}
-                            isConnected={
-                                selectedCube
-                                    ? selectedCube === source || selectedCube === target
-                                    : false
+                    .map((target: string) => {
+                        // Determina la dirección
+                        let direction: "incoming" | "outgoing" | "other" = "other";
+                        if (selectedCube) {
+                            if (target === selectedCube && classDependencies.includes(source)) {
+                                direction = "outgoing";
+                            } else if (source === selectedCube && dependentClasses.includes(target)) {
+                                direction = "incoming";
                             }
-                            setHoveredLine={setHoveredLine}
-                        />
-                    ));
+                        }
+                        return (
+                            <DependencyLine
+                                key={source + "->" + target}
+                                from={from}
+                                to={classPosMap[target]}
+                                source={source}
+                                target={target}
+                                hoveredLine={hoveredLine}
+                                isConnected={
+                                    selectedCube
+                                        ? selectedCube === source || selectedCube === target
+                                        : false
+                                }
+                                setHoveredLine={setHoveredLine}
+                                direction={direction}
+                            />
+                        );
+                    });
             })}
         </>
     );

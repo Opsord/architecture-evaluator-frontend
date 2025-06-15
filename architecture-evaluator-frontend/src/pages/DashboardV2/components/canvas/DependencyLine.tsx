@@ -21,6 +21,10 @@ const COLOR_HOVERED = "#20a8ac";
 const OPACITY_DEFAULT = 0.15;
 const OPACITY_ACTIVE = 1;
 
+// Colors for different directions
+const COLOR_INCOMING = "#ffb347"; // naranja
+const COLOR_OUTGOING = "#6ecb63"; // verde
+
 // Curve shape parameters
 const CURVE_POINTS = 32;           // Number of points in the curve
 const SAG_FACTOR = 0.15;           // Sag as a fraction of distance
@@ -40,6 +44,8 @@ interface DependencyLineProps {
     hoveredLine: string | null;
     isConnected: boolean;
     setHoveredLine: (key: string | null) => void;
+    direction?: "incoming" | "outgoing" | "other";
+
 }
 
 /* --------------------------------------------------------------------------
@@ -59,6 +65,7 @@ const DependencyLine: React.FC<DependencyLineProps> = ({
                                                            hoveredLine,
                                                            isConnected,
                                                            setHoveredLine,
+                                                           direction = "other", // Default to "other" if not specified
                                                        }) => {
     // Unique key for this dependency
     const lineKey = `${source}->${target}`;
@@ -93,9 +100,13 @@ const DependencyLine: React.FC<DependencyLineProps> = ({
     // Determine color and opacity
     const color = isHovered
         ? COLOR_HOVERED
-        : isConnected
-            ? COLOR_CONNECTED
-            : COLOR_DEFAULT;
+        : direction === "incoming"
+            ? COLOR_INCOMING
+            : direction === "outgoing"
+                ? COLOR_OUTGOING
+                : isConnected
+                    ? COLOR_CONNECTED
+                    : COLOR_DEFAULT;
     const opacity = isHovered || isConnected ? OPACITY_ACTIVE : OPACITY_DEFAULT;
     const width = isHovered
         ? lineWidth

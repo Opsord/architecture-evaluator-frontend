@@ -215,6 +215,7 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
                 hoveredLine={hoveredLine}
                 selectedCube={selectedCube}
                 setHoveredLine={setHoveredLine}
+                selectedUnit={selectedCube ? cubes.find(c => c.displayName === selectedCube)?.data : null}
             />
 
             <CameraControls />
