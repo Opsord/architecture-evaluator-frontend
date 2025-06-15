@@ -1,16 +1,29 @@
 // architecture-evaluator-frontend/src/pages/DashboardV2/components/LayerBox.tsx
+
 import React from "react";
 import { DoubleSide } from "three";
 import { Html } from "@react-three/drei";
 
+/* ==========================================================================
+ * 1. TYPES
+ * ======================================================================== */
 interface LayerBoxProps {
     position: [number, number, number];
     size: [number, number, number];
     label: string;
 }
 
+/* ==========================================================================
+ * 2. MAIN COMPONENT: LayerBox
+ * ======================================================================== */
+/**
+ * Renders a translucent 3D box representing an architectural layer.
+ * - Displays a label above the box.
+ * - Used as a visual grouping for class cubes in the dashboard.
+ */
 const LayerBox: React.FC<LayerBoxProps> = ({ position, size, label }) => (
     <group>
+        {/* Translucent box for the layer */}
         <mesh position={position} renderOrder={-1}>
             <boxGeometry args={size} />
             <meshStandardMaterial
@@ -21,6 +34,7 @@ const LayerBox: React.FC<LayerBoxProps> = ({ position, size, label }) => (
                 depthWrite={false}
             />
         </mesh>
+        {/* Label above the box */}
         <Html position={[position[0], position[1] + size[1] / 2 + 0.7, position[2]]} center>
             <div style={{
                 background: "white",

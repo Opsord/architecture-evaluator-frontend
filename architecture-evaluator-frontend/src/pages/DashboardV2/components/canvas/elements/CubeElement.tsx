@@ -1,39 +1,30 @@
-// architecture-evaluator-frontend/src/pages/DashboardV2/components/Cube.tsx
+// architecture-evaluator-frontend/src/pages/DashboardV2/components/canvas/elements/CubeElement.tsx
 
-import React, { useState } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import { Html } from "@react-three/drei";
-import { useMemo, useRef } from "react";
 import { BoxGeometry, Mesh } from "three";
 import { useFrame } from "@react-three/fiber";
-import type { ProcessedClassInstance } from "../../../../types/ProcessedClassInstance.ts";
+import type { ProcessedClassInstance } from "../../../../../types/ProcessedClassInstance.ts";
 
-
-/* --------------------------------------------------------------------------
- * Key Visual Constants
- * ------------------------------------------------------------------------ */
-
-const COLOR_DEPENDENCY = "#6ecb63"; // verde
-const COLOR_DEPENDENT = "#ffb347";  // naranja
-
+/* ==========================================================================
+ * 1. VISUAL CONSTANTS
+ * ======================================================================== */
+const COLOR_DEPENDENCY = "#0cdc3d";
+const COLOR_DEPENDENT = "#ffda47";
 const COLOR_SELECTED = "#38EED0";
 const COLOR_DIMMED = "#051c1f";
 const OPACITY_DIMMED = 0.25;
-const DEFORMATION_FACTOR = 0.4; // Factor to control deformation intensity
-const VIBRATION_FACTOR = 0.1; // Factor to control vibration amplitude
+const DEFORMATION_FACTOR = 0.4; // Controls deformation intensity (LCOM2)
+const VIBRATION_FACTOR = 0.1;   // Controls vibration amplitude (instability)
 
-/* --------------------------------------------------------------------------
- * Functions
- * ------------------------------------------------------------------------ */
+/* ==========================================================================
+ * 2. UTILITY FUNCTIONS
+ * ======================================================================== */
 
 /**
- * Generates a deformed box geometry based on size and LCOM2 value.
- * @param size - Size of the box in [width, height, depth]
- * @param lcom - Lack of Cohesion 2 (LCOM2) value to determine deformation
- * @return {BoxGeometry} Deformed box geometry
- * @description
- * This function creates a box geometry and applies a random deformation
- * based on the LCOM2 value. The deformation is applied by scaling
- * the vertices of the box randomly within a range determined by the LCOM2 value.
+ * Generates a deformed box geometry based on LCOM2 (cohesion) metric.
+ * @param size - Box size [width, height, depth]
+ * @param lcom - LCOM2 value (higher = more deformation)
  */
 function getDeformedBoxGeometry(size: [number, number, number], lcom: number): BoxGeometry {
     const geometry = new BoxGeometry(...size, 2, 2, 2);
@@ -51,47 +42,39 @@ function getDeformedBoxGeometry(size: [number, number, number], lcom: number): B
 }
 
 /**
- * Calculates the color for a given CC (Cyclomatic Complexity) value.
+ * Maps Cyclomatic Complexity (CC) to a color gradient (green → yellow → orange → red).
  * @param cc - Cyclomatic Complexity value
- * @param minCC - Minimum CC value for color scaling (default: 1)
- * @param maxCC - Maximum CC value for color scaling (default: 20)
- * @return {string} RGB color string in the format "rgb(r,g,b)"
- * @description
- * This function maps the CC value to a color gradient from green (low complexity)
- * to red (high complexity). The color is calculated based on the normalized CC value
- * within the specified range. The blue channel is kept constant to create a
- * yellowish-green-red gradient.
+ * @param minCC - Minimum CC for scaling
+ * @param maxCC - Maximum CC for scaling
  */
 function getCCColor(cc: number, minCC = 1, maxCC = 20): string {
-    // Clamp and normalize CC
     const t = Math.min(1, Math.max(0, (cc - minCC) / (maxCC - minCC)));
-    let r = 0, g = 0, b = 0;
-
+    let r: number, g: number, b: number;
     if (t < 0.5) {
         // Green to Yellow
         const localT = t / 0.5;
-        r = Math.round(51 + (255 - 51) * localT);   // 51 → 255
+        r = Math.round(51 + (255 - 51) * localT);
         g = 255;
         b = 51;
     } else if (t < 0.8) {
         // Yellow to Orange
         const localT = (t - 0.5) / 0.3;
         r = 255;
-        g = Math.round(255 - (255 - 165) * localT); // 255 → 165
+        g = Math.round(255 - (255 - 165) * localT);
         b = 51;
     } else {
         // Orange to Red
         const localT = (t - 0.8) / 0.2;
         r = 255;
-        g = Math.round(165 - (165 - 51) * localT);  // 165 → 51
+        g = Math.round(165 - (165 - 51) * localT);
         b = 51;
     }
     return `rgb(${r},${g},${b})`;
 }
 
-/* --------------------------------------------------------------------------
- * Types
- * ------------------------------------------------------------------------ */
+/* ==========================================================================
+ * 3. TYPES
+ * ======================================================================== */
 interface CubeProps {
     position: [number, number, number];
     label: string;
@@ -108,33 +91,43 @@ interface CubeProps {
     isDependent?: boolean;
 }
 
-/* --------------------------------------------------------------------------
- * Cube Component
- * ------------------------------------------------------------------------ */
-const CompUnitRepresentation: React.FC<CubeProps> = ({
-                                                         position,
-                                                         label,
-                                                         size = [1, 1, 1],
-                                                         unit,
-                                                         onPointerOver,
-                                                         onPointerOut,
-                                                         onClick,
-                                                         isSelected,
-                                                         isDependency,
-                                                         isDependent,
-                                                         dimmed,
-                                                         vibrationEnabled = true,
-                                                     }) => {
+/* ==========================================================================
+ * 4. MAIN COMPONENT: CubeElement
+ * ======================================================================== */
+/**
+ * Renders a 3D cube representing a class, with:
+ * - Color by Cyclomatic Complexity (CC)
+ * - Deformation by LCOM2 (cohesion)
+ * - Vibration by instability
+ * - Visual state for selection, dependency, and dimming
+ * - Tooltip on hover/selection
+ */
+const CubeElement: React.FC<CubeProps> = ({
+                                              position,
+                                              label,
+                                              size = [1, 1, 1],
+                                              unit,
+                                              onPointerOver,
+                                              onPointerOut,
+                                              onClick,
+                                              isSelected,
+                                              isDependency,
+                                              isDependent,
+                                              dimmed,
+                                              vibrationEnabled = true,
+                                          }) => {
+    // --- State ---
     const [hovered, setHovered] = useState(false);
 
-    // Get LCOM2 value (default 0)
+    // --- Metrics ---
     const lcom = unit?.classAnalysis?.cohesionMetrics?.lackOfCohesion2 ?? 0;
-
-    const meshRef = useRef<Mesh>(null);
+    const cc = unit?.classAnalysis?.complexityMetrics?.approxMcCabeCC ?? 1;
     const instability = unit?.classAnalysis?.couplingMetrics?.instability ?? 0;
+
+    // --- Geometry & Animation ---
+    const meshRef = useRef<Mesh>(null);
     useFrame(() => {
         if (meshRef.current) {
-            // Clamp instability to avoid excessive vibration
             const safeInstability = Math.min(instability, 0.99);
             if (vibrationEnabled && safeInstability > 0.1) {
                 const amplitude = VIBRATION_FACTOR * Math.pow(safeInstability, 2);
@@ -148,15 +141,15 @@ const CompUnitRepresentation: React.FC<CubeProps> = ({
     });
     const geometry = useMemo(() => getDeformedBoxGeometry(size, lcom), [size]);
 
-    const cc = unit?.classAnalysis?.complexityMetrics?.approxMcCabeCC ?? 1;
+    // --- Color & Opacity ---
     let color = getCCColor(cc);
     if (isSelected) color = COLOR_SELECTED;
     else if (isDependency) color = COLOR_DEPENDENCY;
     else if (isDependent) color = COLOR_DEPENDENT;
     else if (dimmed) color = COLOR_DIMMED;
-
     const opacity = dimmed ? OPACITY_DIMMED : 1;
 
+    // --- Render ---
     return (
         <mesh
             ref={meshRef}
@@ -191,4 +184,4 @@ const CompUnitRepresentation: React.FC<CubeProps> = ({
     );
 };
 
-export default CompUnitRepresentation;
+export default CubeElement;

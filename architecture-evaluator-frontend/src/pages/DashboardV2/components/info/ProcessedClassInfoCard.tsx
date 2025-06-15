@@ -1,5 +1,5 @@
 import React from "react";
-import type { ProcessedClassInstance } from "../../../types/ProcessedClassInstance.ts";
+import type { ProcessedClassInstance } from "../../../../types/ProcessedClassInstance.ts";
 
 const metricDescriptions = {
     linesOfCode: "Lines of Code: Total number of lines in this class.",

@@ -1,9 +1,14 @@
-import React from "react";
-import DependencyLine from "./DependencyLine.tsx";
-import type { CompUnitVisual } from "./CompUnitsScene.tsx";
-import { LayerAnnotation } from "../../../../types/class/LayerAnnotation.ts";
-import type { ProcessedClassInstance } from "../../../../types/ProcessedClassInstance.ts";
+// architecture-evaluator-frontend/src/pages/DashboardV2/components/canvas/agrupators/DependencyLinesLayer.tsx
 
+import React from "react";
+import DependencyLine from "../elements/DependencyLine.tsx";
+import type { CompUnitVisual } from "../CompUnitsScene.tsx";
+import { LayerAnnotation } from "../../../../../types/class/LayerAnnotation.ts";
+import type { ProcessedClassInstance } from "../../../../../types/ProcessedClassInstance.ts";
+
+/* ==========================================================================
+ * 1. TYPES
+ * ======================================================================== */
 interface DependencyLinesLayerProps {
     cubes: CompUnitVisual[];
     classPosMap: Record<string, [number, number, number]>;
@@ -13,11 +18,20 @@ interface DependencyLinesLayerProps {
     selectedUnit?: ProcessedClassInstance | null;
 }
 
-// Helper to get a cube by displayName
+/* ==========================================================================
+ * 2. UTILITY FUNCTIONS
+ * ======================================================================== */
+
+/**
+ * Returns the cube object by its display name.
+ */
 const getCubeByName = (cubes: CompUnitVisual[], name: string) =>
     cubes.find(c => c.displayName === name);
 
-// Modularized filter function
+/**
+ * Determines if a dependency line should be shown between two cubes.
+ * Excludes lines involving test classes.
+ */
 function shouldShowDependencyLine(
     sourceCube: CompUnitVisual,
     targetCube: CompUnitVisual | undefined
@@ -25,14 +39,20 @@ function shouldShowDependencyLine(
     if (!targetCube) return false;
     const sourceLayer = sourceCube.data.classInstance.layerAnnotation;
     const targetLayer = targetCube.data.classInstance.layerAnnotation;
-    //Debug
-    //console.log(sourceCube.displayName, sourceLayer, targetCube.displayName, targetLayer);
     return (
         sourceLayer !== LayerAnnotation.TESTING &&
         targetLayer !== LayerAnnotation.TESTING
     );
 }
 
+/* ==========================================================================
+ * 3. MAIN COMPONENT: DependencyLinesLayer
+ * ======================================================================== */
+/**
+ * Renders all dependency lines between class cubes in the 3D scene.
+ * - Only shows lines between non-test classes.
+ * - Highlights lines based on selection and direction (incoming/outgoing).
+ */
 const DependencyLinesLayer: React.FC<DependencyLinesLayerProps> = ({
                                                                        cubes,
                                                                        classPosMap,
@@ -41,7 +61,7 @@ const DependencyLinesLayer: React.FC<DependencyLinesLayerProps> = ({
                                                                        setHoveredLine,
                                                                        selectedUnit,
                                                                    }) => {
-    // Get the class dependencies and dependent classes from the selected unit
+    // Get dependencies for the selected unit
     const classDependencies = selectedUnit?.classInstance?.classDependencies ?? [];
     const dependentClasses = selectedUnit?.classInstance?.dependentClasses ?? [];
 
@@ -57,7 +77,7 @@ const DependencyLinesLayer: React.FC<DependencyLinesLayerProps> = ({
                         shouldShowDependencyLine(cube, getCubeByName(cubes, target))
                     )
                     .map((target: string) => {
-                        // Determina la dirección
+                        // Determine direction for highlighting
                         let direction: "incoming" | "outgoing" | "other" = "other";
                         if (selectedCube) {
                             if (target === selectedCube && classDependencies.includes(source)) {

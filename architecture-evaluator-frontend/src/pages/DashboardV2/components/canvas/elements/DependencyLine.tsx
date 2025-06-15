@@ -1,14 +1,13 @@
-// architecture-evaluator-frontend/src/pages/DashboardV2/components/DependencyLine.tsx
+// architecture-evaluator-frontend/src/pages/DashboardV2/components/canvas/elements/DependencyLine.tsx
 
 import React, { useState } from "react";
 import { Line, Html } from "@react-three/drei";
 import { Vector3, CatmullRomCurve3 } from "three";
 import { useFrame } from "@react-three/fiber";
 
-/* --------------------------------------------------------------------------
- * Constants
- * ------------------------------------------------------------------------ */
-// Line thickness and color
+/* ==========================================================================
+ * 1. VISUAL CONSTANTS
+ * ======================================================================== */
 const BASE_LINE_WIDTH = 4;
 const CONNECTED_LINE_WIDTH = 10;
 const PULSE_MIN = 6;
@@ -21,21 +20,19 @@ const COLOR_HOVERED = "#20a8ac";
 const OPACITY_DEFAULT = 0.15;
 const OPACITY_ACTIVE = 1;
 
-// Colors for different directions
-const COLOR_INCOMING = "#ffb347"; // naranja
-const COLOR_OUTGOING = "#6ecb63"; // verde
+const COLOR_INCOMING = "#ffb347"; // orange
+const COLOR_OUTGOING = "#6ecb63"; // green
 
-// Curve shape parameters
-const CURVE_POINTS = 32;           // Number of points in the curve
-const SAG_FACTOR = 0.15;           // Sag as a fraction of distance
-const SAG_MIN = 0.8;               // Minimum sag
-const CONTROL1_LERP = 0.33;        // Lerp factor for first control point
-const CONTROL2_LERP = 0.66;        // Lerp factor for second control point
-const CONTROL_POINT_OFFSET = new Vector3(0, -1, 1); // Offset for control points
+const CURVE_POINTS = 32;
+const SAG_FACTOR = 0.15;
+const SAG_MIN = 0.8;
+const CONTROL1_LERP = 0.33;
+const CONTROL2_LERP = 0.66;
+const CONTROL_POINT_OFFSET = new Vector3(0, -1, 1);
 
-/* --------------------------------------------------------------------------
- * Types
- * ------------------------------------------------------------------------ */
+/* ==========================================================================
+ * 2. TYPES
+ * ======================================================================== */
 interface DependencyLineProps {
     from: [number, number, number];
     to: [number, number, number];
@@ -45,12 +42,11 @@ interface DependencyLineProps {
     isConnected: boolean;
     setHoveredLine: (key: string | null) => void;
     direction?: "incoming" | "outgoing" | "other";
-
 }
 
-/* --------------------------------------------------------------------------
- * DependencyLine Component
- * ------------------------------------------------------------------------ */
+/* ==========================================================================
+ * 3. MAIN COMPONENT: DependencyLine
+ * ======================================================================== */
 /**
  * Renders a curved line representing a dependency between two classes.
  * - Pulsates when hovered.
@@ -65,39 +61,35 @@ const DependencyLine: React.FC<DependencyLineProps> = ({
                                                            hoveredLine,
                                                            isConnected,
                                                            setHoveredLine,
-                                                           direction = "other", // Default to "other" if not specified
+                                                           direction = "other",
                                                        }) => {
-    // Unique key for this dependency
+    // --- Unique key for this dependency ---
     const lineKey = `${source}->${target}`;
 
-    // Convert positions to Vector3
+    // --- Curve calculation ---
     const fromVec = new Vector3(...from);
     const toVec = new Vector3(...to);
-
-    // Calculate curve sag based on distance
     const distance = fromVec.distanceTo(toVec);
     const sag = Math.max(SAG_MIN, distance * SAG_FACTOR);
 
     // Control points for the curve
     const control1 = fromVec.clone().lerp(toVec, CONTROL1_LERP).add(CONTROL_POINT_OFFSET.clone().multiplyScalar(sag));
     const control2 = fromVec.clone().lerp(toVec, CONTROL2_LERP).add(CONTROL_POINT_OFFSET.clone().multiplyScalar(sag));
-
-    // Generate curve points
     const curve = new CatmullRomCurve3([fromVec, control1, control2, toVec]);
     const curvePoints = curve.getPoints(CURVE_POINTS);
 
-    // State for pulsating line width
+    // --- State for pulsating line width ---
     const [lineWidth, setLineWidth] = useState(PULSE_MIN);
     const isHovered = hoveredLine === lineKey;
 
-    // Animate line width when hovered
+    // --- Animate line width when hovered ---
     useFrame(() => {
         if (isHovered) {
             setLineWidth((prev) => (prev >= PULSE_MAX ? PULSE_MIN : prev + PULSE_STEP));
         }
     });
 
-    // Determine color and opacity
+    // --- Color, opacity, and width logic ---
     const color = isHovered
         ? COLOR_HOVERED
         : direction === "incoming"
@@ -114,6 +106,7 @@ const DependencyLine: React.FC<DependencyLineProps> = ({
             ? CONNECTED_LINE_WIDTH
             : BASE_LINE_WIDTH;
 
+    // --- Render ---
     return (
         <group key={lineKey}>
             <Line

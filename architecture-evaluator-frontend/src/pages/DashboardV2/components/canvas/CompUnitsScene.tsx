@@ -2,10 +2,10 @@
 
 import React, { useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import LayerBox from "./LayerBox.tsx";
-import CompUnitRow from "./CompUnitRow.tsx";
-import DependencyLinesLayer from "./DependencyLinesLayer.tsx";
-import CameraControls from "./CameraControls.tsx";
+import LayerBox from "./elements/LayerBox.tsx";
+import CompUnitRow from "./agrupators/CompUnitRow.tsx";
+import DependencyLinesLayer from "./agrupators/DependencyLinesLayer.tsx";
+import CameraControls from "./controls/CameraControls.tsx";
 import type { ProjectAnalysisDTO } from "../../../../types/ProjectAnalysisInstance.ts";
 import type { ProcessedClassInstance } from "../../../../types/ProcessedClassInstance.ts";
 
@@ -193,7 +193,7 @@ const CompUnitsScene: React.FC<CompUnitsSceneProps> = ({ projectData, selectedCu
     }));
 
     return (
-        <Canvas camera={{ position: [0, 0, 20], fov: 60 }}>
+        <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 20], fov: 60 }}>
             <ambientLight intensity={0.5} />
             <directionalLight position={[5, 10, 7]} intensity={1} />
 

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useProjectContext } from "../../context/ProjectContext";
 import CompUnitsScene from "./components/canvas/CompUnitsScene.tsx";
-import ProcessedClassInfoCard from "./components/ProcessedClassInfoCard.tsx";
-import DashboardLegend from "./components/DashboardLegend.tsx";
+import ProcessedClassInfoCard from "./components/info/ProcessedClassInfoCard.tsx";
+import DashboardLegend from "./components/legend/DashboardLegend.tsx";
 import type { ProcessedClassInstance } from "../../types/ProcessedClassInstance.ts";
 
 const DashboardV2: React.FC = () => {
