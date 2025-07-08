@@ -41,7 +41,7 @@ const ProcessedClassInfoCard: React.FC<{ unit: ProcessedClassInstance | null }> 
 
     const classInstance = unit.classInstance ?? {};
     const classLayerAnnotation = classInstance.layerAnnotation ?? "UNKNOWN";
-    const analysis = unit.classAnalysis ?? {};
+    const analysis = unit.classAnalysisInstance ?? {};
     const programMetrics = analysis.programMetrics ?? {};
     const complexityMetrics = analysis.complexityMetrics ?? {};
     const couplingMetrics = analysis.couplingMetrics ?? {};

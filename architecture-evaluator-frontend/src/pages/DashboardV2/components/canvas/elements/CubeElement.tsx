@@ -120,9 +120,9 @@ const CubeElement: React.FC<CubeProps> = ({
     const [hovered, setHovered] = useState(false);
 
     // --- Metrics ---
-    const lcom = unit?.classAnalysis?.cohesionMetrics?.lackOfCohesion2 ?? 0;
-    const cc = unit?.classAnalysis?.complexityMetrics?.approxMcCabeCC ?? 1;
-    const instability = unit?.classAnalysis?.couplingMetrics?.instability ?? 0;
+    const lcom = unit?.classAnalysisInstance?.cohesionMetrics?.lackOfCohesion2 ?? 0;
+    const cc = unit?.classAnalysisInstance?.complexityMetrics?.approxMcCabeCC ?? 1;
+    const instability = unit?.classAnalysisInstance?.couplingMetrics?.instability ?? 0;
 
     // --- Geometry & Animation ---
     const meshRef = useRef<Mesh>(null);

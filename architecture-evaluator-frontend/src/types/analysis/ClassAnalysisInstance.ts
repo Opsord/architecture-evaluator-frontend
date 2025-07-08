@@ -5,7 +5,7 @@ import type { ComplexityMetrics } from './ComplexityMetrics';
 import type { CouplingMetrics } from './CouplingMetrics';
 import type { CohesionMetrics } from './CohesionMetrics';
 
-export interface ClassAnalysis {
+export interface ClassAnalysisInstance {
     classCount: number;
     interfaceCount: number;
     statementCount: number;
