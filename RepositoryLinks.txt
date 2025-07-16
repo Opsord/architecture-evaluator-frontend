@@ -1,19 +1,33 @@
+---------------------------------------------------------------------
 https://github.com/tomas-manriquez/tingeso-2024-2
-
+---------------------------------------------------------------------
 John
 https://github.com/PodssilDev/MueblesStgo_Monolitico
+---------------------------------------------------------------------
+Ale:
 
-Ale
-Front: https://github.com/LilyisusUSACH/AutoFix_Frontend
-Back: https://github.com/LilyisusUSACH/autofix_AutoCareHub (Gradle)
+Front:
+https://github.com/LilyisusUSACH/AutoFix_Frontend
 
+Back:
+https://github.com/LilyisusUSACH/autofix_AutoCareHub (Gradle)
+---------------------------------------------------------------------
 https://github.com/ArielPinochet/Tingeso20205-1
-
+---------------------------------------------------------------------
 Diego Toro
 https://github.com/torokokoo/PrestaBanco/tree/entrega1
-
+---------------------------------------------------------------------
 Seba:
 https://github.com/sebsatian/PrestaBanco_TINGESOEV1
-
+---------------------------------------------------------------------
 Propio:
 https://github.com/Opsord/TINGESO-EV-01
+---------------------------------------------------------------------
+David:
+
+Front:
+https://github.com/davidmartinez-esc/ev1_TingesoFrontend.git
+
+Back:
+https://github.com/davidmartinez-esc/ev1_TingesoBackend
+---------------------------------------------------------------------

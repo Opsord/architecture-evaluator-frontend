@@ -6,6 +6,7 @@ const metricDescriptions = {
     numberOfMethods: "Number of Methods: Total methods defined in this class.",
     sumOfExecutableStatements: "Statements: Number of executable statements.",
     approxMcCabeCC: "Cyclomatic Complexity: Measures the number of linearly independent paths.",
+    maxMethodMcCabeCC: "Max Method CC: Maximum cyclomatic complexity of any method in this class.",
     improvedCC: "Improved CC: Enhanced cyclomatic complexity metric.",
     afferentCoupling: "Afferent Coupling (Ca): Number of classes that depend on this class.",
     efferentCoupling: "Efferent Coupling (Ce): Number of classes this class depends on.",
@@ -74,6 +75,12 @@ const ProcessedClassInfoCard: React.FC<{ unit: ProcessedClassInstance | null }> 
                 <div className="grid grid-cols-2 gap-x-6 gap-y-1">
                     <LabelWithTooltip label="CC:" description={metricDescriptions.approxMcCabeCC} />
                     <div className="font-medium">{complexityMetrics.approxMcCabeCC ?? 0}</div>
+                    <LabelWithTooltip label="Max Method CC:" description={metricDescriptions.maxMethodMcCabeCC} />
+                    <div className="font-medium">
+                        {typeof complexityMetrics.maxMethodMcCabeCC === "number"
+                            ? complexityMetrics.maxMethodMcCabeCC
+                            : "0"}
+                    </div>
                     <LabelWithTooltip label="Improved CC:" description={metricDescriptions.improvedCC} />
                     <div className="font-medium">
                         {typeof complexityMetrics.improvedCC === "number"

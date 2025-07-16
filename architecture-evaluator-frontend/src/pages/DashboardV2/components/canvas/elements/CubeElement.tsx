@@ -25,10 +25,19 @@ const VIBRATION_FACTOR = 0.1;   // Controls vibration amplitude (instability)
  * Generates a deformed box geometry based on LCOM2 (cohesion) metric.
  * @param size - Box size [width, height, depth]
  * @param lcom - LCOM2 value (higher = more deformation)
+ * @param minLcom
+ * @param maxLcom
  */
-function getDeformedBoxGeometry(size: [number, number, number], lcom: number): BoxGeometry {
+function getDeformedBoxGeometry(
+    size: [number, number, number],
+    lcom: number,
+    minLcom: number = 0,
+    maxLcom: number = 1
+): BoxGeometry {
+    // Normalize lcom to [0, 1]
+    const normalizedLcom = Math.min(1, Math.max(0, (lcom - minLcom) / (maxLcom - minLcom)));
     const geometry = new BoxGeometry(...size, 2, 2, 2);
-    const spikeStrength = lcom * DEFORMATION_FACTOR;
+    const spikeStrength = normalizedLcom * DEFORMATION_FACTOR;
     const position = geometry.attributes.position;
     for (let i = 0; i < position.count; i++) {
         const x = position.getX(i);
@@ -44,32 +53,21 @@ function getDeformedBoxGeometry(size: [number, number, number], lcom: number): B
 /**
  * Maps Cyclomatic Complexity (CC) to a color gradient (green → yellow → orange → red).
  * @param cc - Cyclomatic Complexity value
- * @param minCC - Minimum CC for scaling
- * @param maxCC - Maximum CC for scaling
  */
-function getCCColor(cc: number, minCC = 1, maxCC = 20): string {
-    const t = Math.min(1, Math.max(0, (cc - minCC) / (maxCC - minCC)));
-    let r: number, g: number, b: number;
-    if (t < 0.5) {
-        // Green to Yellow
-        const localT = t / 0.5;
-        r = Math.round(51 + (255 - 51) * localT);
-        g = 255;
-        b = 51;
-    } else if (t < 0.8) {
-        // Yellow to Orange
-        const localT = (t - 0.5) / 0.3;
-        r = 255;
-        g = Math.round(255 - (255 - 165) * localT);
-        b = 51;
+function getCCColor(cc: number): string {
+    if (cc <= 10) {
+        // High testability: Green
+        return "rgb(12, 220, 61)";
+    } else if (cc <= 20) {
+        // Medium testability: Yellow
+        return "rgb(255, 218, 71)";
+    } else if (cc <= 40) {
+        // Low testability: Orange
+        return "rgb(253,210,67)";
     } else {
-        // Orange to Red
-        const localT = (t - 0.8) / 0.2;
-        r = 255;
-        g = Math.round(165 - (165 - 51) * localT);
-        b = 51;
+        // Very high cost: Red
+        return "rgb(204,11,11)";
     }
-    return `rgb(${r},${g},${b})`;
 }
 
 /* ==========================================================================
@@ -120,8 +118,8 @@ const CubeElement: React.FC<CubeProps> = ({
     const [hovered, setHovered] = useState(false);
 
     // --- Metrics ---
-    const lcom = unit?.classAnalysisInstance?.cohesionMetrics?.lackOfCohesion2 ?? 0;
-    const cc = unit?.classAnalysisInstance?.complexityMetrics?.approxMcCabeCC ?? 1;
+    const lcom = unit?.classAnalysisInstance?.cohesionMetrics?.lackOfCohesion5 ?? 0;
+    const cc = unit?.classAnalysisInstance?.complexityMetrics?.maxMethodMcCabeCC ?? 1;
     const instability = unit?.classAnalysisInstance?.couplingMetrics?.instability ?? 0;
 
     // --- Geometry & Animation ---
