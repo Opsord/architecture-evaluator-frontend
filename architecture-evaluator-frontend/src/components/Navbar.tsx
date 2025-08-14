@@ -23,6 +23,11 @@ const Navbar: React.FC = () => {
               </a>
             </li>
             <li>
+              <a href="/instructions" className="text-white hover:text-gray-200 font-medium transition">
+                Instructions
+              </a>
+            </li>
+            <li>
               <a href="/load" className="text-white hover:text-gray-200 font-medium transition">
                 Load
               </a>

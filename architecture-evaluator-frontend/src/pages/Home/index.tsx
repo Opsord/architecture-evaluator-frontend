@@ -28,7 +28,7 @@ function Home() {
                     <div className="flex flex-col gap-6 bg-white/90 backdrop-blur rounded-2xl shadow-2xl p-10 h-full justify-center border border-gray-border">
                         <button
                             className="flex items-center justify-center gap-4 w-full py-6 px-6 text-2xl bg-gradient-to-r from-primary to-bright-turquoise-400 text-white font-bold rounded-xl shadow-lg transition-transform duration-200 hover:scale-105 hover:shadow-2xl active:scale-100"
-                            onClick={() => alert("Instructions coming soon")}
+                            onClick={() => navigate('/instructions')}
                         >
                             <FaBookOpen className="text-3xl" />
                             Instructions
