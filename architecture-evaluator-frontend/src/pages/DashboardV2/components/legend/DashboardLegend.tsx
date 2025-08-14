@@ -15,6 +15,7 @@ const lineLegend = [
     }
 ];
 
+// @ts-ignore
 const DashboardLegend: React.FC<DashboardLegendProps> = ({ onClose }) => (
     <div
         className="relative flex flex-col items-center justify-center gap-2 p-3 w-full h-full bg-gradient-to-br from-bright-turquoise-50 to-white rounded-2xl shadow-inner border border-gray-200"
@@ -109,7 +110,7 @@ const DashboardLegend: React.FC<DashboardLegendProps> = ({ onClose }) => (
             <div className="w-full text-center mb-2 ">
                 <div className="font-semibold text-gray-800 mb-0.5">Dependency Lines</div>
                 <div className="flex flex-col gap-1 items-center-safe">
-                    {lineLegend.map(({ label, color, style }, idx) => (
+                    {lineLegend.map(({ label, color }) => (
                         <div key={label} className="flex items-center gap-1">
                             <div
                                 style={{
@@ -117,7 +118,6 @@ const DashboardLegend: React.FC<DashboardLegendProps> = ({ onClose }) => (
                                     height: 0,
                                     borderTop: `3px solid ${color}`,
                                     borderRadius: 1,
-                                    ...style,
                                 }}
                             />
                             <span className="text-[10px] text-gray-700">{label}</span>

@@ -7,7 +7,7 @@ const Navbar: React.FC = () => {
           {/* Left: Logo and App Name */}
           <a href="/" className="flex items-center gap-3">
             <img
-                src="https://flowbite.com/docs/images/logo.svg"
+                src="/archev-icon.svg"
                 className="h-8 drop-shadow-lg"
                 alt="Flowbite Logo"
             />
