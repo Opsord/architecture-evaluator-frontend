@@ -6,7 +6,7 @@ const Instructions: React.FC = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="flex flex-col min-h-full py-8 px-4 bg-gradient-to-br from-background-light to-swamp-100 overflow-y-auto">
+        <div className="flex flex-col min-h-full py-8 px-4 overflow-y-auto">
             <div className="max-w-5xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
@@ -38,7 +38,7 @@ const Instructions: React.FC = () => {
                 </div>
 
                 {/* Architecture Section */}
-                <div className="bg-gradient-to-r from-primary/10 to-bright-turquoise-100/50 backdrop-blur rounded-2xl shadow-xl p-8 mb-8 border border-gray-border">
+                <div className="bg-gradient-to-r from-swamp-100 to-background-light  backdrop-blur rounded-2xl shadow-xl p-8 mb-8 border border-gray-border">
                     <div className="flex items-center gap-3 mb-6">
                         <FaLayerGroup className="text-3xl text-primary" />
                         <h2 className="text-3xl font-bold text-primary">
@@ -83,7 +83,7 @@ const Instructions: React.FC = () => {
                 </div>
 
                 {/* Metrics Section */}
-                <div className="bg-gradient-to-r from-bright-turquoise-100/50 to-primary/10 backdrop-blur rounded-2xl shadow-xl p-8 mb-8 border border-gray-border">
+                <div className="bg-gradient-to-r from-swamp-100 to-background-light  backdrop-blur rounded-2xl shadow-xl p-8 mb-8 border border-gray-border">
                     <div className="flex items-center gap-3 mb-6">
                         <FaChartLine className="text-3xl text-primary" />
                         <h2 className="text-3xl font-bold text-primary">
@@ -219,15 +219,25 @@ const Instructions: React.FC = () => {
                                     </p>
                                 </div>
                                 <div className="flex items-center gap-4">
-                                    <div className="w-6 h-6 bg-primary rounded-full animate-bounce"></div>
+                                    <div
+                                        className="w-6 h-6 bg-primary rounded-full"
+                                        style={{
+                                            animation: 'vibrate 0.6s infinite'
+                                        }}
+                                    ></div>
                                     <p className="text-gray-dark">
-                                        <span className="font-bold">I = 1:</span> the entity is completely unstable; it depends on many others, but none depend on it.
+                                        <span className="font-bold">0 &lt; I &lt; 1:</span> indicates an intermediate degree of structural stability.
                                     </p>
                                 </div>
                                 <div className="flex items-center gap-4">
-                                    <div className="w-6 h-6 bg-primary rounded-full animate-pulse"></div>
+                                    <div
+                                        className="w-6 h-6 bg-primary rounded-full"
+                                        style={{
+                                            animation: 'vibrate 0.2s infinite'
+                                        }}
+                                    ></div>
                                     <p className="text-gray-dark">
-                                        <span className="font-bold">0 &lt; I &lt; 1:</span> indicates an intermediate degree of structural stability.
+                                        <span className="font-bold">I = 1:</span> the entity is completely unstable; it depends on many others, but none depend on it.
                                     </p>
                                 </div>
                             </div>
