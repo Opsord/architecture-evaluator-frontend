@@ -60,10 +60,10 @@ function getCCColor(cc: number): string {
         return "rgb(12, 220, 61)";
     } else if (cc <= 20) {
         // Medium testability: Yellow
-        return "rgb(255, 218, 71)";
+        return "rgb(255,218,71)";
     } else if (cc <= 40) {
         // Low testability: Orange
-        return "rgb(253,210,67)";
+        return "rgb(243,144,20)";
     } else {
         // Very high cost: Red
         return "rgb(204,11,11)";
