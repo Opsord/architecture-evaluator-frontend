@@ -6,11 +6,13 @@ type DashboardLegendProps = {
 
 const lineLegend = [
     {
-        label: "Outgoing (Selected class depends on another)",
+        label: "Outgoing",
+        sublabel: "(Selected depends on another)",
         color: "#6ecb63",
     },
     {
-        label: "Incoming (Another class depends on selected)",
+        label: "Incoming",
+        sublabel: "(Another depends on selected)",
         color: "#ffb347",
     }
 ];
@@ -18,8 +20,8 @@ const lineLegend = [
 // @ts-ignore
 const DashboardLegend: React.FC<DashboardLegendProps> = ({ onClose }) => (
     <div
-        className="relative flex flex-col items-center justify-center gap-2 p-3 w-full h-full bg-gradient-to-br from-bright-turquoise-50 to-white rounded-2xl shadow-inner border border-gray-200"
-        style={{ fontSize: "0.85rem" }}
+        className="relative flex flex-col p-3 w-full h-full bg-gradient-to-br from-bright-turquoise-50 to-white rounded-xl shadow-inner border border-gray-200 overflow-y-auto"
+        style={{ fontSize: "0.75rem" }}
     >
         {onClose && (
             <button
@@ -31,99 +33,146 @@ const DashboardLegend: React.FC<DashboardLegendProps> = ({ onClose }) => (
                 ×
             </button>
         )}
-        <div className="w-full flex flex-col items-center">
-            <div className="font-bold text-base text-primary mb-1 tracking-wide">Legend</div>
-            {/* Cyclomatic Complexity */}
-            <div className="mb-2 w-full flex flex-col items-center">
-                <div className="font-semibold text-gray-800 mb-0.5">Cyclomatic Complexity (CC) Color</div>
-                <div className="flex flex-col items-center w-full">
-                    <div
-                        style={{
-                            width: 140,
-                            height: 12,
-                            borderRadius: 6,
-                            border: "1px solid #a0efeb",
-                            background: "linear-gradient(90deg, rgb(12,220,61) 0%, rgb(255,218,71) 25%, rgb(253,210,67) 60%, rgb(204,11,11) 100%)",
-                            boxShadow: "0 1px 4px 0 rgba(32,168,172,0.08)"
-                        }}
-                        className="mb-0.5"
-                    />
-                    <div className="flex justify-between w-full mt-0.5 text-[10px] text-gray-600 font-medium" style={{ width: 140 }}>
-                        <span>1-10</span>
-                        <span>11-20</span>
-                        <span>21-40</span>
-                        <span>{">"}40</span>
+
+        {/* Header */}
+        <div className="font-bold text-lg text-primary mb-3 text-center tracking-wide">Legend</div>
+
+        {/* Cyclomatic Complexity */}
+        <div className="mb-4 bg-white/60 rounded-lg p-3 border border-gray-200">
+            <div className="font-bold text-bright-turquoise-600 mb-2 text-sm text-center">Color</div>
+            <div className="font-semibold text-gray-700 mb-2 text-xs text-center">Cyclomatic Complexity</div>
+            <div className="grid grid-cols-2 gap-2">
+                <div className="flex flex-col items-center">
+                    <div className="w-6 h-4 bg-green-400 rounded border border-green-500 mb-1"></div>
+                    <span className="text-xs text-gray-700 font-medium">Low</span>
+                    <span className="text-[9px] text-gray-500">(1-10)</span>
+                </div>
+                <div className="flex flex-col items-center">
+                    <div className="w-6 h-4 bg-yellow-400 rounded border border-yellow-500 mb-1"></div>
+                    <span className="text-xs text-gray-700 font-medium">Medium</span>
+                    <span className="text-[9px] text-gray-500">(10-20)</span>
+                </div>
+                <div className="flex flex-col items-center">
+                    <div className="w-6 h-4 bg-orange-400 rounded border border-orange-500 mb-1"></div>
+                    <span className="text-xs text-gray-700 font-medium">High</span>
+                    <span className="text-[9px] text-gray-500">(20-40)</span>
+                </div>
+                <div className="flex flex-col items-center">
+                    <div className="w-6 h-4 bg-red-500 rounded border border-red-600 mb-1"></div>
+                    <span className="text-xs text-gray-700 font-medium">Very High</span>
+                    <span className="text-[9px] text-gray-500">(40+)</span>
+                </div>
+            </div>
+        </div>
+
+        {/* Shape and Vibration combined */}
+        <div className="mb-4 bg-white/60 rounded-lg p-3 border border-gray-200">
+            <div className="font-bold text-bright-turquoise-600 mb-2 text-sm text-center">Shape & Motion</div>
+
+            {/* Shape: Cohesion */}
+            <div className="mb-3">
+                <div className="font-semibold text-gray-700 mb-1 text-xs text-center">Shape: Cohesion (LCOM5)</div>
+                <div className="grid grid-cols-2 gap-2 p-3">
+                    <div className="flex flex-col items-center">
+                        <div className="w-6 h-3 bg-primary rounded border border-primary-dark mb-1"></div>
+                        <span className="text-[10px] text-gray-700 text-center">High cohesion</span>
                     </div>
-                    <div className="flex justify-between w-full mt-0.5 text-[10px] text-gray-600 font-medium" style={{ width: 140 }}>
-                        <span>Low</span>
-                        <span>Medium</span>
-                        <span>High</span>
-                        <span>Very High</span>
+                    <div className="flex flex-col items-center">
+                        <div className="w-6 h-3 bg-primary rounded border border-primary-dark transform skew-x-12 skew-y-3 mb-1"></div>
+                        <span className="text-[10px] text-gray-700 text-center">Low cohesion</span>
                     </div>
                 </div>
             </div>
-            {/* Cohesion */}
-            <div className="mb-1 w-full text-center">
-                <div className="font-semibold text-gray-800">Cohesion (Normalized LCOM5)</div>
-                <div className="text-[10px] text-gray-600 italic">
-                    More deformation = lower cohesion (higher normalized LCOM5, range 0–1)
+
+            {/* Vibration: Instability */}
+            <div>
+                <div className="font-semibold text-gray-700 mb-1 text-xs text-center">Motion: Instability</div>
+                <div className="grid grid-cols-3 gap-1 p-3">
+                    <div className="flex flex-col items-center">
+                        <div className="w-3 h-3 bg-primary rounded-full mb-1"></div>
+                        <span className="text-[9px] text-gray-700 text-center">Stable</span>
+                        <span className="text-[8px] text-gray-500">(I=0)</span>
+                    </div>
+                    <div className="flex flex-col items-center">
+                        <div
+                            className="w-3 h-3 bg-primary rounded-full mb-1"
+                            style={{ animation: 'vibrate 0.6s infinite' }}
+                        ></div>
+                        <span className="text-[9px] text-gray-700 text-center">Medium</span>
+                        <span className="text-[8px] text-gray-500">(0&lt;I&lt;1)</span>
+                    </div>
+                    <div className="flex flex-col items-center">
+                        <div
+                            className="w-3 h-3 bg-primary rounded-full mb-1"
+                            style={{ animation: 'vibrate 0.2s infinite' }}
+                        ></div>
+                        <span className="text-[9px] text-gray-700 text-center">Unstable</span>
+                        <span className="text-[8px] text-gray-500">(I=1)</span>
+                    </div>
                 </div>
             </div>
-            {/* Instability */}
-            <div className="mb-1 w-full text-center">
-                <div className="font-semibold text-gray-800">Instability</div>
-                <div className="text-[10px] text-gray-600 italic">
-                    More vibration = higher instability
-                </div>
-            </div>
-            {/* Selection */}
-            <div className="w-full text-center mb-2">
-                <div className="font-semibold text-gray-800 mb-0.5">Selection</div>
-                <div className="flex items-center justify-center gap-2 mt-0.5">
+        </div>
+
+        {/* Selection States */}
+        <div className="mb-4 bg-white/60 rounded-lg p-3 border border-gray-200">
+            <div className="font-bold text-bright-turquoise-600 mb-2 text-sm text-center">Selection</div>
+            <div className="grid grid-cols-3 gap-2">
+                <div className="flex flex-col items-center">
                     <div style={{
-                        width: 18,
-                        height: 10,
+                        width: 12,
+                        height: 8,
                         background: "#38EED0",
-                        borderRadius: 3,
-                        border: "1px solid #a0efeb"
+                        borderRadius: 2,
+                        border: "1px solid #a0efeb",
+                        marginBottom: "4px"
                     }} />
-                    <span className="text-[10px] text-gray-600 font-medium">Selected</span>
+                    <span className="text-[9px] text-gray-700 font-medium text-center">Selected</span>
+                </div>
+                <div className="flex flex-col items-center">
                     <div style={{
-                        width: 18,
-                        height: 10,
+                        width: 12,
+                        height: 8,
                         background: "#048A74",
-                        borderRadius: 3,
-                        border: "1px solid #a0efeb"
+                        borderRadius: 2,
+                        border: "1px solid #a0efeb",
+                        marginBottom: "4px"
                     }} />
-                    <span className="text-[10px] text-gray-600 font-medium">Connected</span>
+                    <span className="text-[9px] text-gray-700 font-medium text-center">Connected</span>
+                </div>
+                <div className="flex flex-col items-center">
                     <div style={{
-                        width: 18,
-                        height: 10,
+                        width: 12,
+                        height: 8,
                         background: "#051c1f",
-                        borderRadius: 3,
-                        border: "1px solid #a0efeb"
+                        borderRadius: 2,
+                        border: "1px solid #a0efeb",
+                        marginBottom: "4px"
                     }} />
-                    <span className="text-[10px] text-gray-600 font-medium">Dimmed</span>
+                    <span className="text-[9px] text-gray-700 font-medium text-center">Dimmed</span>
                 </div>
             </div>
-            {/* Dependency Lines */}
-            <div className="w-full text-center mb-2 ">
-                <div className="font-semibold text-gray-800 mb-0.5">Dependency Lines</div>
-                <div className="flex flex-col gap-1 items-center-safe">
-                    {lineLegend.map(({ label, color }) => (
-                        <div key={label} className="flex items-center gap-1">
+        </div>
+
+        {/* Dependency Lines */}
+        <div className="bg-white/60 rounded-lg p-3 border border-gray-200">
+            <div className="font-bold text-bright-turquoise-600 mb-2 text-sm text-center">Dependencies</div>
+            <div className="space-y-2">
+                {lineLegend.map(({ label, sublabel, color }) => (
+                    <div key={label} className="flex flex-col items-center text-center">
+                        <div className="flex items-center gap-2 mb-1">
                             <div
                                 style={{
-                                    width: 24,
+                                    width: 20,
                                     height: 0,
-                                    borderTop: `3px solid ${color}`,
+                                    borderTop: `2px solid ${color}`,
                                     borderRadius: 1,
                                 }}
                             />
-                            <span className="text-[10px] text-gray-700">{label}</span>
+                            <span className="text-xs text-gray-700 font-medium">{label}</span>
                         </div>
-                    ))}
-                </div>
+                        <span className="text-[9px] text-gray-500 leading-tight">{sublabel}</span>
+                    </div>
+                ))}
             </div>
         </div>
     </div>

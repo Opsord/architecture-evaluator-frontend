@@ -3,6 +3,7 @@ import { useProjectContext } from "../../context/ProjectContext";
 import CompUnitsScene from "./components/canvas/CompUnitsScene.tsx";
 import ProcessedClassInfoCard from "./components/info/ProcessedClassInfoCard.tsx";
 import DashboardLegend from "./components/legend/DashboardLegend.tsx";
+import CanvasNavigationTips from "./components/navigation/CanvasNavigationTips.tsx";
 import type { ProcessedClassInstance } from "../../types/ProcessedClassInstance.ts";
 
 const DashboardV2: React.FC = () => {
@@ -10,7 +11,6 @@ const DashboardV2: React.FC = () => {
     const [selectedCube, setSelectedCube] = useState<string | null>(null);
     const [selectedUnit, setSelectedUnit] = useState<ProcessedClassInstance | null>(null);
     const [vibrationEnabled, setVibrationEnabled] = useState(true);
-    const [legendVisible, setLegendVisible] = useState(true);
 
     if (!projectData) {
         return (
@@ -22,9 +22,14 @@ const DashboardV2: React.FC = () => {
 
     return (
         <div className="flex-1 flex flex-col min-h-0 h-full">
-            <div className="grid grid-cols-4 grid-rows-8 gap-4 flex-1 min-h-0">
-                {/* 1. Canvas Scene */}
-                <div className="col-span-3 row-span-8 bg-white rounded-xl shadow overflow-hidden flex">
+            <div className="grid grid-cols-5 grid-rows-8 gap-4 flex-1 min-h-0">
+                {/* 1. Legend (Left sidebar) */}
+                <div className="row-span-8 bg-white rounded-xl shadow p-0 flex">
+                    <DashboardLegend />
+                </div>
+
+                {/* 2. Canvas Scene (Main area) */}
+                <div className="col-span-3 row-span-7 col-start-2 row-start-2 bg-white rounded-xl shadow overflow-hidden flex">
                     <CompUnitsScene
                         projectData={projectData}
                         selectedCube={selectedCube}
@@ -35,8 +40,9 @@ const DashboardV2: React.FC = () => {
                         vibrationEnabled={vibrationEnabled}
                     />
                 </div>
-                {/* 2. Options */}
-                <div className="col-start-4 bg-white rounded-xl shadow p-3 flex flex-row items-center justify-center gap-2 min-h-[56px]">
+
+                {/* 3. Vibration Toggle (Top right) */}
+                <div className="col-start-5 row-start-1 bg-white rounded-xl shadow p-3 flex flex-row items-center justify-center gap-2 min-h-[56px]">
                     <label htmlFor="vibration-toggle" className="flex items-center cursor-pointer">
                         <div className="relative">
                             <input
@@ -53,32 +59,17 @@ const DashboardV2: React.FC = () => {
                         </div>
                         <span className="ml-2 text-sm text-gray-700 select-none">Vibration</span>
                     </label>
-                    {!legendVisible && (
-                        <button
-                            onClick={() => setLegendVisible(true)}
-                            className="px-3 py-1 bg-bright-turquoise-100 text-bright-turquoise-800 rounded-full border border-bright-turquoise-200 shadow hover:bg-bright-turquoise-200 font-semibold transition text-sm"
-                            type="button"
-                        >
-                            Show Legend
-                        </button>
-                    )}
                 </div>
-                {/* 3. Info Card */}
-                <div
-                    className={
-                        legendVisible
-                            ? "row-span-4 col-start-4 row-start-2 bg-white rounded-xl shadow p-4 h-full flex flex-col overflow-y-auto"
-                            : "row-span-7 col-start-4 row-start-2 bg-white rounded-xl shadow p-4 h-full flex flex-col overflow-y-auto"
-                    }
-                >
+
+                {/* 4. Info Card (Right sidebar) */}
+                <div className="row-span-7 col-start-5 row-start-2 bg-white rounded-xl shadow p-4 h-full flex flex-col overflow-y-auto">
                     <ProcessedClassInfoCard unit={selectedUnit} />
                 </div>
-                {/* 4. Legend */}
-                {legendVisible && (
-                    <div className="row-span-3 col-start-4 row-start-6 bg-white rounded-xl shadow p-0 flex">
-                        <DashboardLegend onClose={() => setLegendVisible(false)} />
-                    </div>
-                )}
+
+                {/* 6. Canvas Navigation Tips (Top bar) */}
+                <div className="col-span-3 col-start-2 row-start-1 bg-gradient-to-r from-background-light to-swamp-100 rounded-xl shadow border border-gray-border">
+                    <CanvasNavigationTips />
+                </div>
             </div>
         </div>
     );
