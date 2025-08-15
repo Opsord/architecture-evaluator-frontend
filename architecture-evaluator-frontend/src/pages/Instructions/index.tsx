@@ -1,17 +1,17 @@
 import React from 'react';
 import { FaArrowLeft, FaLayerGroup, FaChartLine, FaEye } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useNavigation } from '../../context/NavigationContext';
 
 const Instructions: React.FC = () => {
-    const navigate = useNavigate();
+    const { setCurrentPage } = useNavigation();
 
     return (
-        <div className="flex flex-col min-h-full py-8 px-4 overflow-y-auto">
+        <div className="w-full py-8 px-4">
             <div className="max-w-5xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
                     <button
-                        onClick={() => navigate('/')}
+                        onClick={() => setCurrentPage('home')}
                         className="flex items-center gap-2 mb-4 text-primary hover:text-primary-dark transition-colors"
                     >
                         <FaArrowLeft />
@@ -248,7 +248,7 @@ const Instructions: React.FC = () => {
                 {/* Action Button */}
                 <div className="text-center">
                     <button
-                        onClick={() => navigate('/load')}
+                        onClick={() => setCurrentPage('load')}
                         className="bg-gradient-to-r from-primary to-bright-turquoise-400 text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:scale-105 transition-transform duration-200 text-lg"
                     >
                         Start Analyzing My Project!

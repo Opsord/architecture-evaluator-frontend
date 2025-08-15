@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import * as React from "react";
-import { useNavigate } from 'react-router-dom'
+import { useNavigation } from '../../../context/NavigationContext'
 import { analyzeGitHubRepo } from '../../../services/api'
 import { useProjectContext } from '../../../context/ProjectContext'
 
 export default function GitHubForm() {
     const [repoUrl, setRepoUrl] = useState('')
     const [isLoading, setIsLoading] = useState(false)
-    const navigate = useNavigate()
+    const { setCurrentPage } = useNavigation()
     const { setProjectData } = useProjectContext()
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -18,10 +18,10 @@ export default function GitHubForm() {
         try {
             const response = await analyzeGitHubRepo(repoUrl)
             setProjectData(response.data)
-            navigate('/dashboardV2')
+            setCurrentPage('dashboard')
         } catch (error) {
             console.error('Error:', error)
-            alert('Error al procesar el repositorio')
+            alert('Error processing repository')
         } finally {
             setIsLoading(false)
         }

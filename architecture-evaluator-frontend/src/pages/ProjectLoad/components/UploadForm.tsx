@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import * as React from "react";
-import { useNavigate } from 'react-router-dom'
+import { useNavigation } from '../../../context/NavigationContext'
 import { analyzeProjectUpload } from '../../../services/api'
 import { useProjectContext } from '../../../context/ProjectContext'
 
 export default function UploadForm() {
     const [file, setFile] = useState<File | null>(null)
     const [isUploading, setIsUploading] = useState(false)
-    const navigate = useNavigate()
+    const { setCurrentPage } = useNavigation()
     const { setProjectData } = useProjectContext()
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -18,7 +18,7 @@ export default function UploadForm() {
         try {
             const response = await analyzeProjectUpload(file)
             setProjectData(response.data)
-            navigate('/dashboardV2')
+            setCurrentPage('dashboard')
         } catch (error) {
             console.error('Error uploading:', error)
             alert('Error al subir el proyecto')

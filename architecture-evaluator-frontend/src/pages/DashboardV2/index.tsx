@@ -21,7 +21,7 @@ const DashboardV2: React.FC = () => {
     }
 
     return (
-        <div className="flex-1 flex flex-col min-h-0">
+        <div className="flex-1 flex flex-col min-h-0 h-full">
             <div className="grid grid-cols-4 grid-rows-8 gap-4 flex-1 min-h-0">
                 {/* 1. Canvas Scene */}
                 <div className="col-span-3 row-span-8 bg-white rounded-xl shadow overflow-hidden flex">
