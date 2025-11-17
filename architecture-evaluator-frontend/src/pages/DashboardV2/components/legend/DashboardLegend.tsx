@@ -20,7 +20,7 @@ const lineLegend = [
 // @ts-ignore
 const DashboardLegend: React.FC<DashboardLegendProps> = ({ onClose }) => (
     <div
-        className="relative flex flex-col p-2 w-full h-full bg-gradient-to-br from-bright-turquoise-50 to-white rounded-xl shadow-inner border border-gray-200"
+        className="relative flex flex-col p-2 w-full h-full bg-gradient-to-br from-bright-turquoise-50 to-white rounded-xl shadow-inner border border-gray-200 overflow-y-auto"
         style={{ fontSize: "0.75rem" }}
     >
         {onClose && (
@@ -175,10 +175,11 @@ const DashboardLegend: React.FC<DashboardLegendProps> = ({ onClose }) => (
                         <div className="flex items-center gap-2 mb-1">
                             <div
                                 style={{
-                                    width: 20,
-                                    height: 0,
-                                    borderTop: `2px solid ${color}`,
-                                    borderRadius: 1,
+                                    width: '20px',
+                                    height: '3px',
+                                    backgroundColor: color,
+                                    borderRadius: '1px',
+                                    flexShrink: 0,
                                 }}
                             />
                             <span className="text-sm text-gray-700 font-medium">{label}</span>

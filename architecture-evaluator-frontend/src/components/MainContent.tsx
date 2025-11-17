@@ -23,8 +23,14 @@ const MainContent: React.FC = () => {
     }
   };
 
+  // El Dashboard necesita h-full y min-h-0 para el canvas 3D
+  // Otras páginas necesitan crecer naturalmente
+  const containerClasses = currentPage === 'dashboard'
+    ? "w-full h-full flex flex-col min-h-0 animate-fadeIn"
+    : "w-full flex flex-col animate-fadeIn";
+
   return (
-    <div className="w-full h-full animate-fadeIn">
+    <div className={containerClasses}>
       {renderPage()}
     </div>
   );

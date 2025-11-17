@@ -11,9 +11,9 @@ type LayoutProps = {
 export default function Layout({ }: LayoutProps) {
     return (
         <NavigationProvider>
-            <div className="h-screen flex flex-col bg-gradient-to-br from-background-light via-bright-turquoise-50 to-background-dark">
+            <div className="min-h-screen flex flex-col bg-gradient-to-br from-background-light via-bright-turquoise-50 to-background-dark">
                 <Navbar />
-                <main className="flex-1 flex flex-col items-stretch justify-stretch overflow-y-auto p-3">
+                <main className="flex-1 flex flex-col items-stretch justify-stretch p-3">
                     <MainContent />
                 </main>
                 <Footer />
