@@ -3,20 +3,15 @@
 # Stage 1: Build the application
 FROM node:20-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files for dependency installation
-COPY package*.json ./
+RUN corepack enable && corepack prepare pnpm@10.15.1 --activate
 
-# Install dependencies
-RUN npm ci --only=production=false
+COPY package.json pnpm-lock.yaml .npmrc ./
+RUN pnpm install --frozen-lockfile
 
-# Copy source code
 COPY . .
-
-# Build the application
-RUN npm run build
+RUN pnpm run build
 
 # Stage 2: Production server with Nginx
 FROM nginx:alpine AS production

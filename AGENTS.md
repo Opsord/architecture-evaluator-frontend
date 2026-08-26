@@ -14,14 +14,14 @@ Sibling repos:
 Run from `architecture-evaluator-frontend/`:
 
 ```bash
-npm ci
-npm run dev      # Vite, default http://localhost:5173
-npm run lint
-npm run build    # tsc -b && vite build
-npm run preview
+pnpm install
+pnpm dev         # Vite, default http://localhost:5173
+pnpm lint
+pnpm build       # tsc -b && vite build
+pnpm preview
 ```
 
-Node 20 is what the Dockerfile uses; Node 18+ should work. There is **no unit-test script**. Do not run npm from the git root.
+Package manager is **pnpm** (`packageManager` in `package.json`). Enable with `corepack enable`. Do not add `package-lock.json`. Node 20 is what the Dockerfile uses; Node 18+ should work. There is **no unit-test script**. Do not run pnpm from the git root.
 
 Dev proxy: `/api/orchestrator` → `http://localhost:8080`. The backend must be running for zip/GitHub analysis. CORS on the backend already allows `5173`.
 
@@ -44,6 +44,8 @@ In **DEV only**, `ProjectContext` dynamically imports `src/services/MockData/res
 - Draw dependency lines only when a cube is selected (`DependencyLinesLayer`).
 - Axios calls from `UploadForm` / `GitHubForm` must honor abort on unmount; `finally` should clear loading only if the in-flight controller is still the current one.
 - Keep unused dependencies out of `package.json` (no router/charts unless the UI actually uses them).
+- Install and run with **pnpm**. After dependency changes, commit `pnpm-lock.yaml`. If a native package needs a postinstall (SWC, esbuild, Tailwind oxide), add it to `pnpm.onlyBuiltDependencies`.
+- Keep `@types/three` as a direct devDependency. pnpm does not hoist Three.js types the way npm did, and `tsc -b` fails without them.
 
 ## Gotchas
 
