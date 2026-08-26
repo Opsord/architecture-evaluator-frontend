@@ -1,57 +1,34 @@
-// --------------------------------------------------
-// Imports
-// --------------------------------------------------
 import React, { createContext, useContext, useEffect, useState } from "react";
 import type { ProjectAnalysisDTO } from "../types/ProjectAnalysisInstance.ts";
-import mockData from "../services/MockData/response-zip.json";
 
-// --------------------------------------------------
-// Constants
-// --------------------------------------------------
-const LOCAL_STORAGE_KEY = "projectData";
-
-// --------------------------------------------------
-// Context Type Definition
-// --------------------------------------------------
 interface ProjectContextType {
     projectData: ProjectAnalysisDTO | null;
     setProjectData: (data: ProjectAnalysisDTO) => void;
 }
 
-// --------------------------------------------------
-// Context Creation
-// --------------------------------------------------
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
-// --------------------------------------------------
-// Provider Component
-// --------------------------------------------------
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [projectData, setProjectDataState] = useState<ProjectAnalysisDTO | null>(null);
 
-    // ----------------------------------------------
-    // Load from localStorage or mockData on mount
-    // ----------------------------------------------
     useEffect(() => {
-        const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (stored) {
-            setProjectDataState(JSON.parse(stored));
-        } else {
-            setProjectDataState(mockData as unknown as ProjectAnalysisDTO);
+        if (!import.meta.env.DEV) {
+            return;
         }
+        let cancelled = false;
+        void import("../services/MockData/response-zip.json").then((module) => {
+            if (cancelled) {
+                return;
+            }
+            setProjectDataState((current) => current ?? (module.default as unknown as ProjectAnalysisDTO));
+        });
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
-    // ----------------------------------------------
-    // Save to localStorage on change
-    // ----------------------------------------------
     const setProjectData = (data: ProjectAnalysisDTO) => {
-        try {
-            setProjectDataState(data);
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
-        } catch (error) {
-            console.error("Failed to update project data:", error);
-            alert("An error occurred while updating the project data. Please try again.");
-        }
+        setProjectDataState(data);
     };
 
     return (
@@ -61,9 +38,6 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     );
 };
 
-// --------------------------------------------------
-// Custom Hook
-// --------------------------------------------------
 export const useProjectContext = (): ProjectContextType => {
     const context = useContext(ProjectContext);
     if (!context) {

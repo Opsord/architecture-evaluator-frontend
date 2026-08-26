@@ -65,6 +65,10 @@ const DependencyLinesLayer: React.FC<DependencyLinesLayerProps> = ({
     const classDependencies = selectedUnit?.classInstance?.classDependencies ?? [];
     const dependentClasses = selectedUnit?.classInstance?.dependentClasses ?? [];
 
+    if (!selectedCube) {
+        return null;
+    }
+
     return (
         <>
             {cubes.flatMap((cube) => {
@@ -74,6 +78,7 @@ const DependencyLinesLayer: React.FC<DependencyLinesLayerProps> = ({
                 return deps
                     .filter((target: string) =>
                         classPosMap[target] &&
+                        (source === selectedCube || target === selectedCube) &&
                         shouldShowDependencyLine(cube, getCubeByName(cubes, target))
                     )
                     .map((target: string) => {
