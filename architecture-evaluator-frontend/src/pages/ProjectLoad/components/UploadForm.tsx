@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import * as React from "react";
 import { useNavigation } from '../../../context/NavigationContext'
 import { analyzeProjectUpload } from '../../../services/api'
@@ -9,17 +9,27 @@ export default function UploadForm() {
     const [isUploading, setIsUploading] = useState(false)
     const { setCurrentPage } = useNavigation()
     const { setProjectData } = useProjectContext()
+    const abortRef = useRef<AbortController | null>(null)
+
+    useEffect(() => () => abortRef.current?.abort(), [])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!file) return
 
+        abortRef.current?.abort()
+        const controller = new AbortController()
+        abortRef.current = controller
+
         setIsUploading(true)
         try {
-            const response = await analyzeProjectUpload(file)
+            const response = await analyzeProjectUpload(file, controller.signal)
             setProjectData(response.data)
             setCurrentPage('dashboard')
         } catch (error) {
+            if (axiosIsCanceled(error)) {
+                return
+            }
             console.error('Error uploading:', error)
             alert('Error al subir el proyecto')
         } finally {
@@ -58,4 +68,8 @@ export default function UploadForm() {
             </button>
         </form>
     )
+}
+
+function axiosIsCanceled(error: unknown): boolean {
+    return typeof error === 'object' && error !== null && 'code' in error && (error as { code?: string }).code === 'ERR_CANCELED'
 }

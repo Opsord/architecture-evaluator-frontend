@@ -1,6 +1,6 @@
 // architecture-evaluator-frontend/src/pages/DashboardV2/components/canvas/elements/CubeElement.tsx
 
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Html } from "@react-three/drei";
 import { BoxGeometry, Mesh } from "three";
 import { useFrame } from "@react-three/fiber";
@@ -28,13 +28,26 @@ const VIBRATION_FACTOR = 0.1;   // Controls vibration amplitude (instability)
  * @param minLcom
  * @param maxLcom
  */
+function hashLabel(label: string): number {
+    let hash = 0;
+    for (let i = 0; i < label.length; i++) {
+        hash = Math.imul(31, hash) + label.charCodeAt(i);
+    }
+    return hash;
+}
+
+function seededUnit(seed: number): number {
+    const x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+}
+
 function getDeformedBoxGeometry(
     size: [number, number, number],
     lcom: number,
+    seed: number,
     minLcom: number = 0,
     maxLcom: number = 1
 ): BoxGeometry {
-    // Normalize lcom to [0, 1]
     const normalizedLcom = Math.min(1, Math.max(0, (lcom - minLcom) / (maxLcom - minLcom)));
     const geometry = new BoxGeometry(...size, 2, 2, 2);
     const spikeStrength = normalizedLcom * DEFORMATION_FACTOR;
@@ -43,7 +56,7 @@ function getDeformedBoxGeometry(
         const x = position.getX(i);
         const y = position.getY(i);
         const z = position.getZ(i);
-        const spike = 1 + Math.random() * spikeStrength;
+        const spike = 1 + seededUnit(seed + i) * spikeStrength;
         position.setXYZ(i, x * spike, y * spike, z * spike);
     }
     position.needsUpdate = true;
@@ -124,20 +137,29 @@ const CubeElement: React.FC<CubeProps> = ({
 
     // --- Geometry & Animation ---
     const meshRef = useRef<Mesh>(null);
-    useFrame(() => {
-        if (meshRef.current) {
-            const safeInstability = Math.min(instability, 0.99);
-            if (vibrationEnabled && safeInstability > 0.1) {
-                const amplitude = VIBRATION_FACTOR * Math.pow(safeInstability, 2);
-                meshRef.current.position.x = position[0] + (Math.random() - 0.5) * amplitude;
-                meshRef.current.position.y = position[1] + (Math.random() - 0.5) * amplitude;
-                meshRef.current.position.z = position[2] + (Math.random() - 0.5) * amplitude;
-            } else {
-                meshRef.current.position.set(position[0], position[1], position[2]);
-            }
+    const shouldVibrate = vibrationEnabled && Math.min(instability, 0.99) > 0.1;
+    const phase = useMemo(() => hashLabel(label) * 0.001, [label]);
+    useEffect(() => {
+        if (!shouldVibrate && meshRef.current) {
+            meshRef.current.position.set(position[0], position[1], position[2]);
         }
+    }, [shouldVibrate, position]);
+    useFrame((state) => {
+        if (!meshRef.current || !shouldVibrate) {
+            return;
+        }
+        const amplitude = VIBRATION_FACTOR * Math.pow(Math.min(instability, 0.99), 2);
+        const t = state.clock.elapsedTime + phase;
+        meshRef.current.position.set(
+            position[0] + Math.sin(t * 13) * amplitude,
+            position[1] + Math.sin(t * 17) * amplitude,
+            position[2] + Math.sin(t * 19) * amplitude,
+        );
     });
-    const geometry = useMemo(() => getDeformedBoxGeometry(size, lcom), [size]);
+    const geometry = useMemo(
+        () => getDeformedBoxGeometry(size, lcom, hashLabel(label)),
+        [size, lcom, label]
+    );
 
     // --- Color & Opacity ---
     let color = getCCColor(cc);

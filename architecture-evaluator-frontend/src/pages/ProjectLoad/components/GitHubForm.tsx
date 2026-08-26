@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import * as React from "react";
 import { useNavigation } from '../../../context/NavigationContext'
 import { analyzeGitHubRepo } from '../../../services/api'
@@ -9,17 +9,27 @@ export default function GitHubForm() {
     const [isLoading, setIsLoading] = useState(false)
     const { setCurrentPage } = useNavigation()
     const { setProjectData } = useProjectContext()
+    const abortRef = useRef<AbortController | null>(null)
+
+    useEffect(() => () => abortRef.current?.abort(), [])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!repoUrl) return
 
+        abortRef.current?.abort()
+        const controller = new AbortController()
+        abortRef.current = controller
+
         setIsLoading(true)
         try {
-            const response = await analyzeGitHubRepo(repoUrl)
+            const response = await analyzeGitHubRepo(repoUrl, controller.signal)
             setProjectData(response.data)
             setCurrentPage('dashboard')
         } catch (error) {
+            if (typeof error === 'object' && error !== null && 'code' in error && (error as { code?: string }).code === 'ERR_CANCELED') {
+                return
+            }
             console.error('Error:', error)
             alert('Error processing repository')
         } finally {

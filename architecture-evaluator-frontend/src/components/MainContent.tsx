@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { useNavigation } from '../context/NavigationContext';
 import Home from '../pages/Home';
 import Instructions from '../pages/Instructions';
 import ProjectLoad from '../pages/ProjectLoad';
-import DashboardV2 from '../pages/DashboardV2';
+
+const DashboardV2 = lazy(() => import('../pages/DashboardV2'));
 
 const MainContent: React.FC = () => {
   const { currentPage } = useNavigation();
@@ -17,7 +18,11 @@ const MainContent: React.FC = () => {
       case 'load':
         return <ProjectLoad />;
       case 'dashboard':
-        return <DashboardV2 />;
+        return (
+          <Suspense fallback={<div className="p-8 text-center text-gray-500">Loading dashboard…</div>}>
+            <DashboardV2 />
+          </Suspense>
+        );
       default:
         return <Home />;
     }
