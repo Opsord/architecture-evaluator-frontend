@@ -33,7 +33,9 @@ export default function GitHubForm() {
             console.error('Error:', error)
             alert('Error processing repository')
         } finally {
-            setIsLoading(false)
+            if (abortRef.current === controller) {
+                setIsLoading(false)
+            }
         }
     }
 

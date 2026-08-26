@@ -15,9 +15,16 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         if (!import.meta.env.DEV) {
             return;
         }
+        let cancelled = false;
         void import("../services/MockData/response-zip.json").then((module) => {
-            setProjectDataState(module.default as unknown as ProjectAnalysisDTO);
+            if (cancelled) {
+                return;
+            }
+            setProjectDataState((current) => current ?? (module.default as unknown as ProjectAnalysisDTO));
         });
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     const setProjectData = (data: ProjectAnalysisDTO) => {

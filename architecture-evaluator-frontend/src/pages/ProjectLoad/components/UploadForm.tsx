@@ -33,7 +33,9 @@ export default function UploadForm() {
             console.error('Error uploading:', error)
             alert('Error al subir el proyecto')
         } finally {
-            setIsUploading(false)
+            if (abortRef.current === controller) {
+                setIsUploading(false)
+            }
         }
     }
 
