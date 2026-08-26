@@ -36,7 +36,7 @@ architecture-evaluator-frontend/   # Vite app — run all commands here
 ## Prerequisites
 
 - Node.js 18+ (20 used in Docker)
-- npm
+- [pnpm](https://pnpm.io/) 10 (Corepack: `corepack enable`)
 - Backend on **http://localhost:8080** for real analyses (Vite proxies `/api/orchestrator`)
 
 ## Run locally
@@ -44,18 +44,18 @@ architecture-evaluator-frontend/   # Vite app — run all commands here
 ```sh
 git clone https://github.com/Opsord/architecture-evaluator-frontend.git
 cd architecture-evaluator-frontend/architecture-evaluator-frontend
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 Open **http://localhost:5173**.
 
 | Script | What it does |
 |--------|----------------|
-| `npm run dev` | Vite dev server + API proxy |
-| `npm run lint` | ESLint |
-| `npm run build` | Typecheck + production bundle |
-| `npm run preview` | Serve the production build |
+| `pnpm dev` | Vite dev server + API proxy |
+| `pnpm lint` | ESLint |
+| `pnpm build` | Typecheck + production bundle |
+| `pnpm preview` | Serve the production build |
 
 With Docker (from the Vite app directory):
 
