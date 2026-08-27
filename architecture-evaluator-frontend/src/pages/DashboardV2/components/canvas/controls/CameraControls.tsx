@@ -3,6 +3,7 @@ import React from "react";
 
 const CameraControls: React.FC = () => (
     <OrbitControls
+        makeDefault
         enableRotate={true}
         enablePan={true}
         enableZoom={true}

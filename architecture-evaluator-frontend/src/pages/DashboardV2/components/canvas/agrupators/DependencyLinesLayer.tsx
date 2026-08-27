@@ -1,40 +1,19 @@
-// architecture-evaluator-frontend/src/pages/DashboardV2/components/canvas/agrupators/DependencyLinesLayer.tsx
-
-import React from "react";
+import React, { useMemo, useState } from "react";
 import DependencyLine from "../elements/DependencyLine.tsx";
 import type { CompUnitVisual } from "../CompUnitsScene.tsx";
 import { LayerAnnotation } from "../../../../../types/class/LayerAnnotation.ts";
 import type { ProcessedClassInstance } from "../../../../../types/ProcessedClassInstance.ts";
 
-/* ==========================================================================
- * 1. TYPES
- * ======================================================================== */
 interface DependencyLinesLayerProps {
     cubes: CompUnitVisual[];
     classPosMap: Record<string, [number, number, number]>;
-    hoveredLine: string | null;
     selectedCube: string | null;
-    setHoveredLine: (key: string | null) => void;
     selectedUnit?: ProcessedClassInstance | null;
 }
 
-/* ==========================================================================
- * 2. UTILITY FUNCTIONS
- * ======================================================================== */
-
-/**
- * Returns the cube object by its display name.
- */
-const getCubeByName = (cubes: CompUnitVisual[], name: string) =>
-    cubes.find(c => c.displayName === name);
-
-/**
- * Determines if a dependency line should be shown between two cubes.
- * Excludes lines involving test classes.
- */
 function shouldShowDependencyLine(
     sourceCube: CompUnitVisual,
-    targetCube: CompUnitVisual | undefined
+    targetCube: CompUnitVisual | undefined,
 ): boolean {
     if (!targetCube) return false;
     const sourceLayer = sourceCube.data.classInstance.layerAnnotation;
@@ -45,25 +24,64 @@ function shouldShowDependencyLine(
     );
 }
 
-/* ==========================================================================
- * 3. MAIN COMPONENT: DependencyLinesLayer
- * ======================================================================== */
-/**
- * Renders all dependency lines between class cubes in the 3D scene.
- * - Only shows lines between non-test classes.
- * - Highlights lines based on selection and direction (incoming/outgoing).
- */
 const DependencyLinesLayer: React.FC<DependencyLinesLayerProps> = ({
-                                                                       cubes,
-                                                                       classPosMap,
-                                                                       hoveredLine,
-                                                                       selectedCube,
-                                                                       setHoveredLine,
-                                                                       selectedUnit,
-                                                                   }) => {
-    // Get dependencies for the selected unit
-    const classDependencies = selectedUnit?.classInstance?.classDependencies ?? [];
-    const dependentClasses = selectedUnit?.classInstance?.dependentClasses ?? [];
+    cubes,
+    classPosMap,
+    selectedCube,
+    selectedUnit,
+}) => {
+    const [hoveredLine, setHoveredLine] = useState<string | null>(null);
+
+    const cubeByName = useMemo(() => {
+        const map = new Map<string, CompUnitVisual>();
+        for (const cube of cubes) {
+            map.set(cube.displayName, cube);
+        }
+        return map;
+    }, [cubes]);
+
+    const lines = useMemo(() => {
+        if (!selectedCube) {
+            return [];
+        }
+        const classDependencies = new Set(selectedUnit?.classInstance?.classDependencies ?? []);
+        const dependentClasses = new Set(selectedUnit?.classInstance?.dependentClasses ?? []);
+        const result: {
+            source: string;
+            target: string;
+            from: [number, number, number];
+            to: [number, number, number];
+            direction: "incoming" | "outgoing" | "other";
+        }[] = [];
+
+        for (const cube of cubes) {
+            const source = cube.displayName;
+            const deps = cube.data.classInstance.dependentClasses ?? [];
+            for (const target of deps) {
+                const to = classPosMap[target];
+                if (!to || (source !== selectedCube && target !== selectedCube)) {
+                    continue;
+                }
+                if (!shouldShowDependencyLine(cube, cubeByName.get(target))) {
+                    continue;
+                }
+                let direction: "incoming" | "outgoing" | "other" = "other";
+                if (target === selectedCube && classDependencies.has(source)) {
+                    direction = "outgoing";
+                } else if (source === selectedCube && dependentClasses.has(target)) {
+                    direction = "incoming";
+                }
+                result.push({
+                    source,
+                    target,
+                    from: cube.position,
+                    to,
+                    direction,
+                });
+            }
+        }
+        return result;
+    }, [cubes, classPosMap, cubeByName, selectedCube, selectedUnit]);
 
     if (!selectedCube) {
         return null;
@@ -71,47 +89,21 @@ const DependencyLinesLayer: React.FC<DependencyLinesLayerProps> = ({
 
     return (
         <>
-            {cubes.flatMap((cube) => {
-                const from = cube.position;
-                const source = cube.displayName;
-                const deps: string[] = cube.data.classInstance.dependentClasses ?? [];
-                return deps
-                    .filter((target: string) =>
-                        classPosMap[target] &&
-                        (source === selectedCube || target === selectedCube) &&
-                        shouldShowDependencyLine(cube, getCubeByName(cubes, target))
-                    )
-                    .map((target: string) => {
-                        // Determine direction for highlighting
-                        let direction: "incoming" | "outgoing" | "other" = "other";
-                        if (selectedCube) {
-                            if (target === selectedCube && classDependencies.includes(source)) {
-                                direction = "outgoing";
-                            } else if (source === selectedCube && dependentClasses.includes(target)) {
-                                direction = "incoming";
-                            }
-                        }
-                        return (
-                            <DependencyLine
-                                key={source + "->" + target}
-                                from={from}
-                                to={classPosMap[target]}
-                                source={source}
-                                target={target}
-                                hoveredLine={hoveredLine}
-                                isConnected={
-                                    selectedCube
-                                        ? selectedCube === source || selectedCube === target
-                                        : false
-                                }
-                                setHoveredLine={setHoveredLine}
-                                direction={direction}
-                            />
-                        );
-                    });
-            })}
+            {lines.map((line) => (
+                <DependencyLine
+                    key={line.source + "->" + line.target}
+                    from={line.from}
+                    to={line.to}
+                    source={line.source}
+                    target={line.target}
+                    hoveredLine={hoveredLine}
+                    isConnected={selectedCube === line.source || selectedCube === line.target}
+                    setHoveredLine={setHoveredLine}
+                    direction={line.direction}
+                />
+            ))}
         </>
     );
 };
 
-export default DependencyLinesLayer;
+export default React.memo(DependencyLinesLayer);

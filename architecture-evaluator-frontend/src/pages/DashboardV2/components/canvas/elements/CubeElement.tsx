@@ -1,33 +1,19 @@
-// architecture-evaluator-frontend/src/pages/DashboardV2/components/canvas/elements/CubeElement.tsx
-
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Html } from "@react-three/drei";
 import { BoxGeometry, Mesh } from "three";
 import { useFrame } from "@react-three/fiber";
 import type { ProcessedClassInstance } from "../../../../../types/ProcessedClassInstance.ts";
 
-/* ==========================================================================
- * 1. VISUAL CONSTANTS
- * ======================================================================== */
 const COLOR_DEPENDENCY = "#0cdc3d";
 const COLOR_DEPENDENT = "#ffda47";
 const COLOR_SELECTED = "#38EED0";
 const COLOR_DIMMED = "#051c1f";
 const OPACITY_DIMMED = 0.25;
-const DEFORMATION_FACTOR = 0.4; // Controls deformation intensity (LCOM2)
-const VIBRATION_FACTOR = 0.1;   // Controls vibration amplitude (instability)
+const DEFORMATION_FACTOR = 0.4;
+const VIBRATION_FACTOR = 0.1;
 
-/* ==========================================================================
- * 2. UTILITY FUNCTIONS
- * ======================================================================== */
+const plainGeometryCache = new Map<string, BoxGeometry>();
 
-/**
- * Generates a deformed box geometry based on LCOM2 (cohesion) metric.
- * @param size - Box size [width, height, depth]
- * @param lcom - LCOM2 value (higher = more deformation)
- * @param minLcom
- * @param maxLcom
- */
 function hashLabel(label: string): number {
     let hash = 0;
     for (let i = 0; i < label.length; i++) {
@@ -41,12 +27,26 @@ function seededUnit(seed: number): number {
     return x - Math.floor(x);
 }
 
+function sizeKey(size: [number, number, number]): string {
+    return `${size[0]},${size[1]},${size[2]}`;
+}
+
+function getPlainBoxGeometry(size: [number, number, number]): BoxGeometry {
+    const key = sizeKey(size);
+    let geometry = plainGeometryCache.get(key);
+    if (!geometry) {
+        geometry = new BoxGeometry(...size);
+        plainGeometryCache.set(key, geometry);
+    }
+    return geometry;
+}
+
 function getDeformedBoxGeometry(
     size: [number, number, number],
     lcom: number,
     seed: number,
     minLcom: number = 0,
-    maxLcom: number = 1
+    maxLcom: number = 1,
 ): BoxGeometry {
     const normalizedLcom = Math.min(1, Math.max(0, (lcom - minLcom) / (maxLcom - minLcom)));
     const geometry = new BoxGeometry(...size, 2, 2, 2);
@@ -63,87 +63,58 @@ function getDeformedBoxGeometry(
     return geometry;
 }
 
-/**
- * Maps Cyclomatic Complexity (CC) to a color gradient (green → yellow → orange → red).
- * @param cc - Cyclomatic Complexity value
- */
 function getCCColor(cc: number): string {
     if (cc <= 10) {
-        // High testability: Green
         return "rgb(12, 220, 61)";
     } else if (cc <= 20) {
-        // Medium testability: Yellow
         return "rgb(255,218,71)";
     } else if (cc <= 40) {
-        // Low testability: Orange
         return "rgb(243,144,20)";
-    } else {
-        // Very high cost: Red
-        return "rgb(204,11,11)";
     }
+    return "rgb(204,11,11)";
 }
 
-/* ==========================================================================
- * 3. TYPES
- * ======================================================================== */
 interface CubeProps {
     position: [number, number, number];
     label: string;
     size?: [number, number, number];
     unit?: ProcessedClassInstance;
-    onPointerOver?: () => void;
-    onPointerOut?: () => void;
-    onClick?: () => void;
+    onSelect?: (name: string) => void;
     isSelected?: boolean;
-    isConnected?: boolean;
     dimmed?: boolean;
     vibrationEnabled?: boolean;
     isDependency?: boolean;
     isDependent?: boolean;
 }
 
-/* ==========================================================================
- * 4. MAIN COMPONENT: CubeElement
- * ======================================================================== */
-/**
- * Renders a 3D cube representing a class, with:
- * - Color by Cyclomatic Complexity (CC)
- * - Deformation by LCOM2 (cohesion)
- * - Vibration by instability
- * - Visual state for selection, dependency, and dimming
- * - Tooltip on hover/selection
- */
 const CubeElement: React.FC<CubeProps> = ({
-                                              position,
-                                              label,
-                                              size = [1, 1, 1],
-                                              unit,
-                                              onPointerOver,
-                                              onPointerOut,
-                                              onClick,
-                                              isSelected,
-                                              isDependency,
-                                              isDependent,
-                                              dimmed,
-                                              vibrationEnabled = true,
-                                          }) => {
-    // --- State ---
+    position,
+    label,
+    size = [1, 1, 1],
+    unit,
+    onSelect,
+    isSelected,
+    isDependency,
+    isDependent,
+    dimmed,
+    vibrationEnabled = true,
+}) => {
     const [hovered, setHovered] = useState(false);
 
-    // --- Metrics ---
     const lcom = unit?.classAnalysisInstance?.cohesionMetrics?.lackOfCohesion5 ?? 0;
     const cc = unit?.classAnalysisInstance?.complexityMetrics?.maxMethodMcCabeCC ?? 1;
     const instability = unit?.classAnalysisInstance?.couplingMetrics?.instability ?? 0;
 
-    // --- Geometry & Animation ---
     const meshRef = useRef<Mesh>(null);
     const shouldVibrate = vibrationEnabled && Math.min(instability, 0.99) > 0.1;
     const phase = useMemo(() => hashLabel(label) * 0.001, [label]);
+
     useEffect(() => {
         if (!shouldVibrate && meshRef.current) {
             meshRef.current.position.set(position[0], position[1], position[2]);
         }
     }, [shouldVibrate, position]);
+
     useFrame((state) => {
         if (!meshRef.current || !shouldVibrate) {
             return;
@@ -156,36 +127,49 @@ const CubeElement: React.FC<CubeProps> = ({
             position[2] + Math.sin(t * 19) * amplitude,
         );
     });
-    const geometry = useMemo(
-        () => getDeformedBoxGeometry(size, lcom, hashLabel(label)),
-        [size, lcom, label]
-    );
 
-    // --- Color & Opacity ---
+    const geometry = useMemo(() => {
+        if (lcom <= 0) {
+            return getPlainBoxGeometry(size);
+        }
+        return getDeformedBoxGeometry(size, lcom, hashLabel(label));
+    }, [size, lcom, label]);
+
+    useEffect(() => {
+        if (lcom <= 0) {
+            return;
+        }
+        return () => {
+            geometry.dispose();
+        };
+    }, [geometry, lcom]);
+
     let color = getCCColor(cc);
     if (isSelected) color = COLOR_SELECTED;
     else if (isDependency) color = COLOR_DEPENDENCY;
     else if (isDependent) color = COLOR_DEPENDENT;
     else if (dimmed) color = COLOR_DIMMED;
-    const opacity = dimmed ? OPACITY_DIMMED : 1;
 
-    // --- Render ---
     return (
         <mesh
             ref={meshRef}
             position={position}
             geometry={geometry}
-            onPointerOver={() => {
+            onPointerOver={(event) => {
+                event.stopPropagation();
                 setHovered(true);
-                onPointerOver?.();
             }}
-            onPointerOut={() => {
-                setHovered(false);
-                onPointerOut?.();
+            onPointerOut={() => setHovered(false)}
+            onClick={(event) => {
+                event.stopPropagation();
+                onSelect?.(label);
             }}
-            onClick={onClick}
         >
-            <meshStandardMaterial color={color} transparent={true} opacity={opacity} />
+            <meshStandardMaterial
+                color={color}
+                transparent={!!dimmed}
+                opacity={dimmed ? OPACITY_DIMMED : 1}
+            />
             {(hovered || isSelected) && (
                 <Html position={[0, 1.2, 0]}>
                     <div style={{
@@ -204,4 +188,25 @@ const CubeElement: React.FC<CubeProps> = ({
     );
 };
 
-export default CubeElement;
+function cubePropsEqual(prev: CubeProps, next: CubeProps): boolean {
+    const prevSize = prev.size ?? [1, 1, 1];
+    const nextSize = next.size ?? [1, 1, 1];
+    return (
+        prev.label === next.label &&
+        prev.position[0] === next.position[0] &&
+        prev.position[1] === next.position[1] &&
+        prev.position[2] === next.position[2] &&
+        prevSize[0] === nextSize[0] &&
+        prevSize[1] === nextSize[1] &&
+        prevSize[2] === nextSize[2] &&
+        prev.isSelected === next.isSelected &&
+        prev.isDependency === next.isDependency &&
+        prev.isDependent === next.isDependent &&
+        prev.dimmed === next.dimmed &&
+        prev.vibrationEnabled === next.vibrationEnabled &&
+        prev.unit === next.unit &&
+        prev.onSelect === next.onSelect
+    );
+}
+
+export default React.memo(CubeElement, cubePropsEqual);
