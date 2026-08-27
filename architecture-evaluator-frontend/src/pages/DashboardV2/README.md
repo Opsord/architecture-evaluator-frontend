@@ -4,13 +4,14 @@ React Three Fiber components that render analyzed classes as cubes, grouped by S
 
 ## Components
 
-- **CompUnitsScene.tsx** — Layout of layers and cubes from `ProjectAnalysisDTO`. Owns the `<Canvas>`, selection/hover, and composes the pieces below.
-- **LayerBox.tsx** — Translucent box + label for a layer (controllers, services, …).
+- **CompUnitsScene.tsx** — Layout of layers and cubes from `ProjectAnalysisDTO`. Owns the `<Canvas>` and selection. Cube hover stays local; line hover lives in `DependencyLinesLayer`. `frameloop` is `"always"` while vibration is on and `"demand"` when it is off.
+- **LayerBox.tsx** — Translucent layer volume only (no HTML label; does not receive pointer events).
+- **LayerLabelsOverlay.tsx** — CSS labels for visible layers, outside the WebGL tree.
 - **CompUnitRow.tsx** — One row of cubes for a layer; passes selection/dimming into each cube.
-- **CubeElement.tsx** — One class. Idle motion is a sine offset (not per-frame React state). Tooltip on hover/select.
-- **DependencyLinesLayer.tsx** — Coupling lines for the **selected** cube only.
+- **CubeElement.tsx** — One class. Idle motion is a sine offset (not per-frame React state). Tooltip on hover/select. Opaque unless dimmed. Memoized.
+- **DependencyLinesLayer.tsx** — Coupling lines for the **selected** cube only; owns line hover state.
 - **DependencyLine.tsx** — Curved `Line` between two cubes; highlight + tooltip on hover.
-- **CameraControls.tsx** — `OrbitControls` (orbit, pan, zoom).
+- **CameraControls.tsx** — `OrbitControls` (orbit, pan, zoom); `makeDefault` so demand-mode frames invalidate on camera move.
 
 Related UI (siblings of `components/canvas/`):
 

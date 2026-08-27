@@ -40,8 +40,11 @@ In **DEV only**, `ProjectContext` dynamically imports `src/services/MockData/res
 
 - Tailwind CSS v4 via `@tailwindcss/vite`. Use existing UI bits in `src/components/ui/`.
 - Prefer extending current canvas components over new 3D libraries.
-- `useFrame`: no `Math.random` and no `setState` per frame. Cube vibration uses a sine offset.
-- Draw dependency lines only when a cube is selected (`DependencyLinesLayer`).
+- `useFrame`: no `Math.random` and no `setState` per frame. Cube vibration uses a sine offset. Keep vibration **on by default**.
+- Draw dependency lines only when a cube is selected (`DependencyLinesLayer`). Related-class colors are selection, not hover.
+- Do not lift cube hover to `CompUnitsScene`. Line hover stays inside `DependencyLinesLayer`.
+- Cube materials are opaque unless dimmed. Layer boxes must not steal raycasts. Layer names are a CSS overlay, not `Html` in the canvas.
+- `Canvas frameloop` is `"always"` while vibration is on and `"demand"` when it is off.
 - Axios calls from `UploadForm` / `GitHubForm` must honor abort on unmount; `finally` should clear loading only if the in-flight controller is still the current one.
 - Keep unused dependencies out of `package.json` (no router/charts unless the UI actually uses them).
 - Install and run with **pnpm**. After dependency changes, commit `pnpm-lock.yaml`. If a native package needs a postinstall (SWC, esbuild, Tailwind oxide), add it to `pnpm.onlyBuiltDependencies`.
